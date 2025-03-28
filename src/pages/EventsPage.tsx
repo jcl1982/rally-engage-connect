@@ -75,9 +75,9 @@ const EventFilters = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Toutes les distances</SelectItem>
-              <SelectItem value="short">Court (< 100km)</SelectItem>
+              <SelectItem value="short">Court (&lt; 100km)</SelectItem>
               <SelectItem value="medium">Moyen (100-200km)</SelectItem>
-              <SelectItem value="long">Long (> 200km)</SelectItem>
+              <SelectItem value="long">Long (&gt; 200km)</SelectItem>
             </SelectContent>
           </Select>
         </div>
