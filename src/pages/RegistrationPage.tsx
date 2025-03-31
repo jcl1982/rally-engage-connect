@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { CalendarIcon, CarFront, Check, CreditCard, FileText, User } from "lucide-react";
+import { CalendarIcon, CarFront, Check, CreditCard, FileText, User, ShieldCheck, FirstAidKit, BadgeAlert } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { upcomingEvents } from "@/data/eventsData";
@@ -199,7 +199,7 @@ const RegistrationPage = () => {
                 <CardHeader>
                   <CardTitle>Informations du véhicule</CardTitle>
                   <CardDescription>
-                    Veuillez saisir les détails de votre véhicule
+                    Veuillez saisir les détails de votre véhicule et confirmer les équipements de sécurité
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -280,6 +280,131 @@ const RegistrationPage = () => {
                   <div className="space-y-2">
                     <Label htmlFor="modifications">Modifications / Préparations</Label>
                     <Input id="modifications" placeholder="Décrivez les modifications apportées" />
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <ShieldCheck className="text-rally-orange w-5 h-5" />
+                      <h3 className="font-medium">Équipements de sécurité obligatoires</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="rollcage" />
+                          <Label htmlFor="rollcage" className="text-sm font-normal">
+                            Arceau de sécurité homologué
+                          </Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="harness" />
+                          <Label htmlFor="harness" className="text-sm font-normal">
+                            Harnais de sécurité 6 points
+                          </Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="seats" />
+                          <Label htmlFor="seats" className="text-sm font-normal">
+                            Sièges baquets homologués FIA
+                          </Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="extinguisher" />
+                          <Label htmlFor="extinguisher" className="text-sm font-normal">
+                            Extincteur manuel (min. 2kg)
+                          </Label>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="helmets" />
+                          <Label htmlFor="helmets" className="text-sm font-normal">
+                            Casques homologués FIA
+                          </Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="hans" />
+                          <Label htmlFor="hans" className="text-sm font-normal">
+                            Système HANS / FHR
+                          </Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="fireproof" />
+                          <Label htmlFor="fireproof" className="text-sm font-normal">
+                            Combinaisons ignifugées FIA
+                          </Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="cutoff" />
+                          <Label htmlFor="cutoff" className="text-sm font-normal">
+                            Coupe-circuit électrique
+                          </Label>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <FirstAidKit className="text-rally-orange w-5 h-5" />
+                        <h3 className="font-medium">Équipements de secours</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="firstaid" />
+                            <Label htmlFor="firstaid" className="text-sm font-normal">
+                              Trousse de premiers secours
+                            </Label>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="triangle" />
+                            <Label htmlFor="triangle" className="text-sm font-normal">
+                              Triangle de signalisation
+                            </Label>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="towing" />
+                            <Label htmlFor="towing" className="text-sm font-normal">
+                              Anneau de remorquage
+                            </Label>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="reflective" />
+                            <Label htmlFor="reflective" className="text-sm font-normal">
+                              Gilets réfléchissants
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
+                    <div className="flex items-start gap-2">
+                      <BadgeAlert className="text-amber-600 w-5 h-5 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-amber-800 font-medium mb-1">Important</p>
+                        <p className="text-sm text-amber-700">
+                          Tous les équipements de sécurité seront vérifiés lors du contrôle technique avant le départ.
+                          Tout manquement aux exigences de sécurité entraînera une disqualification.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="flex items-center space-x-2">
