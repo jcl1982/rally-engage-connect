@@ -2,49 +2,16 @@
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { CalendarIcon, CarFront, Check, CreditCard, FileText, User, ShieldCheck, FirstAidKit, BadgeAlert } from "lucide-react";
+import { CalendarIcon, CarFront, Check, CreditCard, FileText, User } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { upcomingEvents } from "@/data/eventsData";
-
-const StepStatus = ({ 
-  step, 
-  currentStep, 
-  title, 
-  icon 
-}: { 
-  step: number; 
-  currentStep: number; 
-  title: string; 
-  icon: React.ReactNode 
-}) => {
-  const isActive = step === currentStep;
-  const isCompleted = step < currentStep;
-
-  return (
-    <div className="flex items-center gap-2">
-      <div 
-        className={`w-8 h-8 rounded-full flex items-center justify-center ${
-          isCompleted 
-            ? "bg-green-100 text-green-600" 
-            : isActive 
-              ? "bg-rally-orange text-white" 
-              : "bg-gray-100 text-gray-400"
-        }`}
-      >
-        {isCompleted ? <Check className="w-4 h-4" /> : icon}
-      </div>
-      <span className={isActive ? "font-medium" : "text-muted-foreground"}>{title}</span>
-    </div>
-  );
-};
+import StepStatus from "@/components/registration/StepStatus";
+import PersonalInfoStep from "@/components/registration/PersonalInfoStep";
+import VehicleInfoStep from "@/components/registration/VehicleInfoStep";
+import PaymentStep from "@/components/registration/PaymentStep";
 
 const RegistrationPage = () => {
   const { id } = useParams();
@@ -76,6 +43,20 @@ const RegistrationPage = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
       window.scrollTo(0, 0);
+    }
+  };
+  
+  // Render the current step content
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <PersonalInfoStep />;
+      case 2:
+        return <VehicleInfoStep />;
+      case 3:
+        return <PaymentStep />;
+      default:
+        return <PersonalInfoStep />;
     }
   };
   
@@ -119,367 +100,7 @@ const RegistrationPage = () => {
           </div>
           
           <Card>
-            {currentStep === 1 && (
-              <>
-                <CardHeader>
-                  <CardTitle>Informations personnelles</CardTitle>
-                  <CardDescription>
-                    Veuillez saisir vos informations de pilote
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstname">Prénom</Label>
-                      <Input id="firstname" placeholder="Votre prénom" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastname">Nom</Label>
-                      <Input id="lastname" placeholder="Votre nom" />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="votre@email.com" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Téléphone</Label>
-                      <Input id="phone" placeholder="+33 6 XX XX XX XX" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Adresse</Label>
-                    <Input id="address" placeholder="Votre adresse" />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="zip">Code postal</Label>
-                      <Input id="zip" placeholder="Code postal" />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="city">Ville</Label>
-                      <Input id="city" placeholder="Ville" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="license">Numéro de licence</Label>
-                    <Input id="license" placeholder="Numéro de licence FFSA" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="experience">Expérience en rallye</Label>
-                    <Select defaultValue="beginner">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionnez votre niveau d'expérience" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Débutant (0-2 rallyes)</SelectItem>
-                        <SelectItem value="intermediate">Intermédiaire (3-10 rallyes)</SelectItem>
-                        <SelectItem value="experienced">Expérimenté (11-20 rallyes)</SelectItem>
-                        <SelectItem value="professional">Professionnel (20+ rallyes)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="copilot">Informations du copilote (optionnel)</Label>
-                    <Input id="copilot" placeholder="Nom et prénom du copilote" />
-                  </div>
-                </CardContent>
-              </>
-            )}
-            
-            {currentStep === 2 && (
-              <>
-                <CardHeader>
-                  <CardTitle>Informations du véhicule</CardTitle>
-                  <CardDescription>
-                    Veuillez saisir les détails de votre véhicule et confirmer les équipements de sécurité
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="make">Marque</Label>
-                      <Input id="make" placeholder="Ex: Renault, Peugeot, Alpine..." />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="model">Modèle</Label>
-                      <Input id="model" placeholder="Ex: Clio, 208, A110..." />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="year">Année</Label>
-                      <Input id="year" placeholder="Ex: 2020" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="registration">Immatriculation</Label>
-                      <Input id="registration" placeholder="Ex: AB-123-CD" />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="group">Groupe</Label>
-                      <Select defaultValue="a">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez le groupe" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="a">Groupe A (Voitures de tourisme)</SelectItem>
-                          <SelectItem value="n">Groupe N (Voitures de production)</SelectItem>
-                          <SelectItem value="r">Groupe R (Voitures de rallye)</SelectItem>
-                          <SelectItem value="gt">Groupe GT (Grand Tourisme)</SelectItem>
-                          <SelectItem value="f">Groupe F (Formule libre)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="class">Classe</Label>
-                      <Select defaultValue="1">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez la classe" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">Classe 1 (jusqu'à 1400cc)</SelectItem>
-                          <SelectItem value="2">Classe 2 (1401-1600cc)</SelectItem>
-                          <SelectItem value="3">Classe 3 (1601-2000cc)</SelectItem>
-                          <SelectItem value="4">Classe 4 (2001-2500cc)</SelectItem>
-                          <SelectItem value="5">Classe 5 (2501cc et plus)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Catégorie</Label>
-                    <Select defaultValue="amateur">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionnez la catégorie" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pro">Catégorie Pro</SelectItem>
-                        <SelectItem value="amateur">Catégorie Amateur</SelectItem>
-                        <SelectItem value="classic">Catégorie Classique</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="power">Puissance (ch)</Label>
-                    <Input id="power" placeholder="Ex: 180" type="number" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="modifications">Modifications / Préparations</Label>
-                    <Input id="modifications" placeholder="Décrivez les modifications apportées" />
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <ShieldCheck className="text-rally-orange w-5 h-5" />
-                      <h3 className="font-medium">Équipements de sécurité obligatoires</h3>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="rollcage" />
-                          <Label htmlFor="rollcage" className="text-sm font-normal">
-                            Arceau de sécurité homologué
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="harness" />
-                          <Label htmlFor="harness" className="text-sm font-normal">
-                            Harnais de sécurité 6 points
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="seats" />
-                          <Label htmlFor="seats" className="text-sm font-normal">
-                            Sièges baquets homologués FIA
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="extinguisher" />
-                          <Label htmlFor="extinguisher" className="text-sm font-normal">
-                            Extincteur manuel (min. 2kg)
-                          </Label>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="helmets" />
-                          <Label htmlFor="helmets" className="text-sm font-normal">
-                            Casques homologués FIA
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="hans" />
-                          <Label htmlFor="hans" className="text-sm font-normal">
-                            Système HANS / FHR
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="fireproof" />
-                          <Label htmlFor="fireproof" className="text-sm font-normal">
-                            Combinaisons ignifugées FIA
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="cutoff" />
-                          <Label htmlFor="cutoff" className="text-sm font-normal">
-                            Coupe-circuit électrique
-                          </Label>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <FirstAidKit className="text-rally-orange w-5 h-5" />
-                        <h3 className="font-medium">Équipements de secours</h3>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="firstaid" />
-                            <Label htmlFor="firstaid" className="text-sm font-normal">
-                              Trousse de premiers secours
-                            </Label>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="triangle" />
-                            <Label htmlFor="triangle" className="text-sm font-normal">
-                              Triangle de signalisation
-                            </Label>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="towing" />
-                            <Label htmlFor="towing" className="text-sm font-normal">
-                              Anneau de remorquage
-                            </Label>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="reflective" />
-                            <Label htmlFor="reflective" className="text-sm font-normal">
-                              Gilets réfléchissants
-                            </Label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
-                    <div className="flex items-start gap-2">
-                      <BadgeAlert className="text-amber-600 w-5 h-5 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-amber-800 font-medium mb-1">Important</p>
-                        <p className="text-sm text-amber-700">
-                          Tous les équipements de sécurité seront vérifiés lors du contrôle technique avant le départ.
-                          Tout manquement aux exigences de sécurité entraînera une disqualification.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="technical" />
-                    <Label htmlFor="technical" className="text-sm font-normal">
-                      Je confirme que mon véhicule est en bon état de fonctionnement et qu'il répond 
-                      aux normes de sécurité requises pour un rallye.
-                    </Label>
-                  </div>
-                </CardContent>
-              </>
-            )}
-            
-            {currentStep === 3 && (
-              <>
-                <CardHeader>
-                  <CardTitle>Paiement</CardTitle>
-                  <CardDescription>
-                    Veuillez procéder au paiement pour finaliser votre inscription
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="bg-accent p-4 rounded-md">
-                    <h3 className="font-medium mb-2">Récapitulatif</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Frais d'inscription</span>
-                        <span>350 €</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Assurance</span>
-                        <span>50 €</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Roadbook et matériel</span>
-                        <span>25 €</span>
-                      </div>
-                      <Separator className="my-2" />
-                      <div className="flex justify-between font-medium">
-                        <span>Total</span>
-                        <span>425 €</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="cardname">Nom sur la carte</Label>
-                    <Input id="cardname" placeholder="Nom complet" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="cardnumber">Numéro de carte</Label>
-                    <Input id="cardnumber" placeholder="1234 5678 9012 3456" />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="expiry">Date d'expiration</Label>
-                      <Input id="expiry" placeholder="MM/AA" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="cvc">CVC</Label>
-                      <Input id="cvc" placeholder="123" />
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
-                    <Label htmlFor="terms" className="text-sm font-normal">
-                      J'accepte les conditions générales et le règlement du rallye.
-                    </Label>
-                  </div>
-                </CardContent>
-              </>
-            )}
+            {renderStep()}
             
             <CardFooter className="flex justify-between">
               {currentStep > 1 ? (
