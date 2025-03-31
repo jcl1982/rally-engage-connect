@@ -2,6 +2,7 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { ShieldCheck } from "lucide-react";
 
 export const SafetyEquipmentSection = () => {
@@ -14,62 +15,134 @@ export const SafetyEquipmentSection = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="rollcage" />
-            <Label htmlFor="rollcage" className="text-sm font-normal">
-              Arceau de sécurité homologué
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="rollcage" />
+              <Label htmlFor="rollcage" className="text-sm font-normal">
+                Arceau de sécurité homologué
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="rollcage_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox id="harness" />
-            <Label htmlFor="harness" className="text-sm font-normal">
-              Harnais de sécurité 6 points
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="harness" />
+              <Label htmlFor="harness" className="text-sm font-normal">
+                Harnais de sécurité 6 points
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="harness_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox id="seats" />
-            <Label htmlFor="seats" className="text-sm font-normal">
-              Sièges baquets homologués FIA
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="seats" />
+              <Label htmlFor="seats" className="text-sm font-normal">
+                Sièges baquets homologués FIA
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="seats_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox id="extinguisher" />
-            <Label htmlFor="extinguisher" className="text-sm font-normal">
-              Extincteur manuel (min. 2kg)
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="extinguisher" />
+              <Label htmlFor="extinguisher" className="text-sm font-normal">
+                Extincteur manuel (min. 2kg)
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="extinguisher_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
         </div>
         
         <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="helmets" />
-            <Label htmlFor="helmets" className="text-sm font-normal">
-              Casques homologués FIA
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="helmets" />
+              <Label htmlFor="helmets" className="text-sm font-normal">
+                Casques homologués FIA
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="helmets_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox id="hans" />
-            <Label htmlFor="hans" className="text-sm font-normal">
-              Système HANS / FHR
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hans" />
+              <Label htmlFor="hans" className="text-sm font-normal">
+                Système HANS / FHR
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="hans_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox id="fireproof" />
-            <Label htmlFor="fireproof" className="text-sm font-normal">
-              Combinaisons ignifugées FIA
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="fireproof" />
+              <Label htmlFor="fireproof" className="text-sm font-normal">
+                Combinaisons ignifugées FIA
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="fireproof_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox id="cutoff" />
-            <Label htmlFor="cutoff" className="text-sm font-normal">
-              Coupe-circuit électrique
-            </Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="cutoff" />
+              <Label htmlFor="cutoff" className="text-sm font-normal">
+                Coupe-circuit électrique
+              </Label>
+            </div>
+            <div className="pl-6">
+              <Input 
+                id="cutoff_number" 
+                placeholder="N° d'homologation" 
+                className="h-8 text-xs w-full md:w-3/4" 
+              />
+            </div>
           </div>
         </div>
       </div>
