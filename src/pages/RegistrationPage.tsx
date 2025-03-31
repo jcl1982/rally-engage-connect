@@ -225,6 +225,39 @@ const RegistrationPage = () => {
                     </div>
                   </div>
                   
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="group">Groupe</Label>
+                      <Select defaultValue="a">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez le groupe" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="a">Groupe A (Voitures de tourisme)</SelectItem>
+                          <SelectItem value="n">Groupe N (Voitures de production)</SelectItem>
+                          <SelectItem value="r">Groupe R (Voitures de rallye)</SelectItem>
+                          <SelectItem value="gt">Groupe GT (Grand Tourisme)</SelectItem>
+                          <SelectItem value="f">Groupe F (Formule libre)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="class">Classe</Label>
+                      <Select defaultValue="1">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez la classe" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">Classe 1 (jusqu'à 1400cc)</SelectItem>
+                          <SelectItem value="2">Classe 2 (1401-1600cc)</SelectItem>
+                          <SelectItem value="3">Classe 3 (1601-2000cc)</SelectItem>
+                          <SelectItem value="4">Classe 4 (2001-2500cc)</SelectItem>
+                          <SelectItem value="5">Classe 5 (2501cc et plus)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="category">Catégorie</Label>
                     <Select defaultValue="amateur">
