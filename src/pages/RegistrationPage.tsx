@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { CalendarIcon, CarFront, Check, CreditCard, FileText, User } from "lucide-react";
+import { CalendarIcon, CarFront, Check, CreditCard, FileText, Printer, User } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { upcomingEvents } from "@/data/eventsData";
@@ -12,6 +12,8 @@ import StepStatus from "@/components/registration/StepStatus";
 import PersonalInfoStep from "@/components/registration/PersonalInfoStep";
 import VehicleInfoStep from "@/components/registration/VehicleInfoStep";
 import PaymentStep from "@/components/registration/PaymentStep";
+import { printRegistrationForm } from "@/utils/printUtils";
+import PrintableRegistrationSummary from "@/components/registration/PrintableRegistrationSummary";
 
 const RegistrationPage = () => {
   const { id } = useParams();
@@ -46,6 +48,10 @@ const RegistrationPage = () => {
     }
   };
   
+  const handlePrint = () => {
+    printRegistrationForm();
+  };
+  
   // Render the current step content
   const renderStep = () => {
     switch (currentStep) {
@@ -65,14 +71,28 @@ const RegistrationPage = () => {
       <Navbar />
       <main className="flex-grow py-12">
         <div className="container max-w-4xl">
-          <div className="text-center mb-8">
+          {/* Printable summary - only visible when printing */}
+          <PrintableRegistrationSummary />
+          
+          <div className="text-center mb-8 print:hidden">
             <h1 className="text-3xl font-bold mb-2">Inscription</h1>
             <p className="text-muted-foreground">
               {event.title} • {event.date}
             </p>
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="print:hidden" 
+                onClick={handlePrint}
+              >
+                <Printer className="mr-2 h-4 w-4" />
+                Imprimer la fiche d'inscription
+              </Button>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 print:hidden">
             <StepStatus 
               step={1} 
               currentStep={currentStep} 
@@ -99,10 +119,12 @@ const RegistrationPage = () => {
             />
           </div>
           
-          <Card>
-            {renderStep()}
+          <Card className="print:shadow-none print:border-none">
+            <div className="print:hidden">
+              {renderStep()}
+            </div>
             
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex justify-between print:hidden">
               {currentStep > 1 ? (
                 <Button variant="outline" onClick={handlePrevious}>
                   Précédent

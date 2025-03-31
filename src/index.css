@@ -5,83 +5,68 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 84% 5%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 84% 5%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 24 95% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 200 97% 48%;
-    --secondary-foreground: 222 84% 5%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
 
-    --accent: 220 14% 96%;
-    --accent-foreground: 222 84% 5%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 222 84% 5%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 240 6% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --rally-orange: 14 100% 57%;
+    --rally-orange-foreground: 0 0% 100%;
   }
 
   .dark {
-    --background: a222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 24 95% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
 
-    --secondary: 200 97% 48%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    --accent: 217 33% 18%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 213 27% 84%;
-    
-    --sidebar-background: 240 6% 10%;
-    --sidebar-foreground: 240 5% 96%;
-    --sidebar-primary: 224 76% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 217 91% 60%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
   }
 }
 
@@ -89,20 +74,52 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
 }
 
-.hover-scale {
-  @apply transition-transform duration-200 hover:scale-105;
-}
-
-.gradient-orange-blue {
-  @apply bg-gradient-to-r from-rally-orange to-rally-blue text-white;
-}
-
-.gradient-dark {
-  @apply bg-gradient-to-b from-rally-dark to-rally-dark/90 text-white;
+/* Print-specific styles */
+@media print {
+  /* Hide elements not needed in print */
+  nav, footer, .print\:hidden {
+    display: none !important;
+  }
+  
+  /* Ensure page breaks appropriately */
+  .card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* Make content fill the page */
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 12pt;
+  }
+  
+  /* Format headers for print */
+  h1 {
+    font-size: 18pt;
+    margin-bottom: 1rem;
+  }
+  
+  /* Show all steps when printing, not just the current one */
+  .container {
+    max-width: 100%;
+    padding: 1rem;
+  }
+  
+  /* Remove backgrounds and use borders for sections */
+  .bg-accent, .bg-amber-50 {
+    background: none !important;
+    border: 1px solid #ccc;
+  }
+  
+  /* Ensure form fields are visible */
+  input, select {
+    border: 1px solid #aaa;
+  }
 }
