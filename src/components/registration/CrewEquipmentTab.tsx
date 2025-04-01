@@ -3,14 +3,14 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Helmet, Shield } from "lucide-react";
+import { HardHat, Shield } from "lucide-react";
 
 const CrewEquipmentTab = () => {
   return (
     <div className="space-y-6 pt-4">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Helmet className="h-5 w-5 text-rally-orange" />
+          <HardHat className="h-5 w-5 text-rally-orange" />
           Équipement du Pilote
         </h3>
         

@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, BadgeAlert, CarFront, Helmet } from "lucide-react";
+import { ShieldCheck, BadgeAlert, CarFront, HardHat } from "lucide-react";
 import { SafetyEquipmentSection } from "./SafetyEquipmentSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CrewEquipmentTab from "./CrewEquipmentTab";
@@ -32,7 +32,7 @@ const VehicleInfoStep = () => {
               <span className="hidden sm:inline">Équipements Véhicule</span>
             </TabsTrigger>
             <TabsTrigger value="crew" className="flex items-center gap-2">
-              <Helmet className="h-4 w-4" />
+              <HardHat className="h-4 w-4" />
               <span className="hidden sm:inline">Équipements Équipage</span>
             </TabsTrigger>
           </TabsList>
