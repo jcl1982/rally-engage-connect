@@ -106,6 +106,37 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = "TableCaption"
 
+// Added a new LogoHeader component for organization logos
+const LogoHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    leftLogo?: string;
+    rightLogo?: string;
+    title?: string;
+  }
+>(({ className, leftLogo, rightLogo, title, ...props }, ref) => (
+  <div 
+    ref={ref} 
+    className={cn("flex items-center justify-between p-4 print:p-2", className)} 
+    {...props}
+  >
+    <div className="w-24 h-24 flex-shrink-0">
+      {leftLogo && (
+        <img src={leftLogo} alt="Logo organisateur" className="object-contain w-full h-full" />
+      )}
+    </div>
+    <div className="text-center">
+      {title && <h2 className="text-xl font-bold">{title}</h2>}
+    </div>
+    <div className="w-24 h-24 flex-shrink-0">
+      {rightLogo && (
+        <img src={rightLogo} alt="Logo fédération" className="object-contain w-full h-full" />
+      )}
+    </div>
+  </div>
+))
+LogoHeader.displayName = "LogoHeader"
+
 export {
   Table,
   TableHeader,
@@ -115,4 +146,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  LogoHeader,
 }

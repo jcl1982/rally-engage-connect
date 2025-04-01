@@ -20,6 +20,10 @@ const RegistrationPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const { toast } = useToast();
   
+  // Logo states for the organizer
+  const [organizerLogo, setOrganizerLogo] = useState<string>("https://images.unsplash.com/photo-1494891848038-7bd202a2afeb");
+  const [federationLogo, setFederationLogo] = useState<string>("https://images.unsplash.com/photo-1466442929976-97f336a657be");
+  
   // Find the event in our data
   const event = upcomingEvents.find(e => e.id === id) || upcomingEvents[0];
   
@@ -66,20 +70,53 @@ const RegistrationPage = () => {
     }
   };
   
+  // Upload handler for organizer logo
+  const handleOrganizerLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setOrganizerLogo(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Upload handler for federation logo
+  const handleFederationLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFederationLogo(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow py-12">
         <div className="container max-w-4xl">
           {/* Printable summary - only visible when printing */}
-          <PrintableRegistrationSummary />
+          <PrintableRegistrationSummary 
+            eventTitle={event.title}
+            eventDate={event.date}
+            organizerLogo={organizerLogo}
+            federationLogo={federationLogo}
+          />
           
           <div className="text-center mb-8 print:hidden">
             <h1 className="text-3xl font-bold mb-2">Inscription</h1>
             <p className="text-muted-foreground">
               {event.title} • {event.date}
             </p>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-wrap gap-2 justify-center">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -89,6 +126,67 @@ const RegistrationPage = () => {
                 <Printer className="mr-2 h-4 w-4" />
                 Imprimer la fiche d'inscription
               </Button>
+              
+              {/* Logo upload buttons */}
+              <div className="flex gap-2 mt-2 md:mt-0">
+                <div>
+                  <input
+                    type="file"
+                    id="organizerLogo"
+                    accept="image/*"
+                    onChange={handleOrganizerLogoUpload}
+                    className="hidden"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="print:hidden"
+                    onClick={() => document.getElementById('organizerLogo')?.click()}
+                  >
+                    <span>Logo Organisateur</span>
+                  </Button>
+                </div>
+                
+                <div>
+                  <input
+                    type="file"
+                    id="federationLogo"
+                    accept="image/*"
+                    onChange={handleFederationLogoUpload}
+                    className="hidden"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="print:hidden"
+                    onClick={() => document.getElementById('federationLogo')?.click()}
+                  >
+                    <span>Logo Fédération</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Preview of uploaded logos */}
+            <div className="flex justify-center items-center gap-8 mt-4 print:hidden">
+              <div className="w-16 h-16">
+                {organizerLogo && (
+                  <img 
+                    src={organizerLogo} 
+                    alt="Logo organisateur" 
+                    className="object-contain w-full h-full"
+                  />
+                )}
+              </div>
+              <div className="w-16 h-16">
+                {federationLogo && (
+                  <img 
+                    src={federationLogo} 
+                    alt="Logo fédération" 
+                    className="object-contain w-full h-full"
+                  />
+                )}
+              </div>
             </div>
           </div>
           
