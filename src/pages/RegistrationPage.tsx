@@ -104,12 +104,12 @@ const RegistrationPage = () => {
       <main className="flex-grow py-12">
         <div className="container max-w-4xl">
           {/* Printable summary - only visible when printing */}
-          <PrintableRegistrationSummary 
-            eventTitle={event.title}
-            eventDate={event.date}
-            organizerLogo={organizerLogo}
-            federationLogo={federationLogo}
-          />
+          <div className="hidden print:block">
+            <PrintableRegistrationSummary 
+              organizerLogo={organizerLogo}
+              federationLogo={federationLogo}
+            />
+          </div>
           
           <div className="text-center mb-8 print:hidden">
             <h1 className="text-3xl font-bold mb-2">Inscription</h1>
@@ -124,7 +124,7 @@ const RegistrationPage = () => {
                 onClick={handlePrint}
               >
                 <Printer className="mr-2 h-4 w-4" />
-                Imprimer la fiche d'inscription
+                Imprimer la fiche d'engagement
               </Button>
               
               {/* Logo upload buttons */}
