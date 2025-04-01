@@ -113,6 +113,49 @@ const PrintableRegistrationSummary = () => {
       </div>
       
       <div className="border-b pb-4 mb-4">
+        <h2 className="text-lg font-bold mb-2">Équipements de l'Équipage</h2>
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <h3 className="font-medium col-span-2">Pilote:</h3>
+          <div>
+            <p className="font-medium">Casque (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+          <div>
+            <p className="font-medium">Combinaison (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+          <div>
+            <p className="font-medium">Gants (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+          <div>
+            <p className="font-medium">Bottines (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-2">
+          <h3 className="font-medium col-span-2">Copilote:</h3>
+          <div>
+            <p className="font-medium">Casque (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+          <div>
+            <p className="font-medium">Combinaison (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+          <div>
+            <p className="font-medium">Gants (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+          <div>
+            <p className="font-medium">Bottines (n° homologation):</p>
+            <p className="text-sm">________________</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-b pb-4 mb-4">
         <h2 className="text-lg font-bold mb-2">Paiement</h2>
         <div>
           <p className="font-medium">Total: 425 €</p>
