@@ -113,44 +113,65 @@ const PrintableRegistrationSummary = () => {
       </div>
       
       <div className="border-b pb-4 mb-4">
-        <h2 className="text-lg font-bold mb-2">Équipements de l'Équipage</h2>
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <h3 className="font-medium col-span-2">Pilote:</h3>
+        <h2 className="text-lg font-bold mb-2">Fiche d'Enregistrement des Équipements (FFSA-EQ-2023-V1)</h2>
+        <table className="w-full border-collapse my-2">
+          <thead>
+            <tr className="border-b">
+              <th className="py-1 text-left font-medium">Équipement</th>
+              <th className="py-1 text-left font-medium">Pilote (n° homologation)</th>
+              <th className="py-1 text-left font-medium">Copilote (n° homologation)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Casque</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Système FHR</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Combinaison</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Sous-vêtements</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Cagoule</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Chaussures</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-1 font-medium">Gants</td>
+              <td className="py-1">________________</td>
+              <td className="py-1">________________</td>
+            </tr>
+          </tbody>
+        </table>
+        <div className="grid grid-cols-2 gap-2 mt-4">
           <div>
-            <p className="font-medium">Casque (n° homologation):</p>
+            <p className="font-medium">Fait à:</p>
             <p className="text-sm">________________</p>
           </div>
           <div>
-            <p className="font-medium">Combinaison (n° homologation):</p>
+            <p className="font-medium">Le:</p>
             <p className="text-sm">________________</p>
           </div>
-          <div>
-            <p className="font-medium">Gants (n° homologation):</p>
-            <p className="text-sm">________________</p>
-          </div>
-          <div>
-            <p className="font-medium">Bottines (n° homologation):</p>
-            <p className="text-sm">________________</p>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-2">
-          <h3 className="font-medium col-span-2">Copilote:</h3>
-          <div>
-            <p className="font-medium">Casque (n° homologation):</p>
-            <p className="text-sm">________________</p>
-          </div>
-          <div>
-            <p className="font-medium">Combinaison (n° homologation):</p>
-            <p className="text-sm">________________</p>
-          </div>
-          <div>
-            <p className="font-medium">Gants (n° homologation):</p>
-            <p className="text-sm">________________</p>
-          </div>
-          <div>
-            <p className="font-medium">Bottines (n° homologation):</p>
-            <p className="text-sm">________________</p>
+          <div className="col-span-2 mt-2">
+            <p className="font-medium">Signature du concurrent:</p>
+            <div className="h-12 border mt-1"></div>
           </div>
         </div>
       </div>
