@@ -15,7 +15,7 @@ interface NavItemProps {
 
 const NavItem = ({ to, icon, label, isMobile = false }: NavItemProps) => {
   const baseClasses = "flex items-center gap-2 font-medium transition-colors";
-  const desktopClasses = "hover:text-rally-orange";
+  const desktopClasses = "hover:text-asag-red";
   const mobileClasses = "p-3 hover:bg-accent rounded-md w-full";
 
   return (
@@ -38,8 +38,8 @@ const Navbar = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-1">
-            <Trophy className="w-6 h-6 text-rally-orange" />
-            <span className="font-bold text-lg">RallyConnect</span>
+            <Trophy className="w-6 h-6 text-asag-red" />
+            <span className="font-bold text-lg">ASA Guadeloupe</span>
           </Link>
         </div>
 
@@ -56,7 +56,7 @@ const Navbar = () => {
           <Button variant="outline" asChild>
             <Link to="/login">Connexion</Link>
           </Button>
-          <Button className="bg-rally-orange hover:bg-rally-orange/90" asChild>
+          <Button className="bg-asag-red hover:bg-asag-red/90 text-white" asChild>
             <Link to="/register">Inscription</Link>
           </Button>
         </div>
@@ -80,7 +80,7 @@ const Navbar = () => {
               <Button variant="outline" asChild className="w-full">
                 <Link to="/login">Connexion</Link>
               </Button>
-              <Button className="bg-rally-orange hover:bg-rally-orange/90 w-full" asChild>
+              <Button className="bg-asag-red hover:bg-asag-red/90 text-white w-full" asChild>
                 <Link to="/register">Inscription</Link>
               </Button>
             </div>

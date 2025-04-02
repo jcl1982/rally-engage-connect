@@ -44,7 +44,7 @@ const RegistrationFormActions: React.FC<RegistrationFormActionsProps> = ({
       </div>
       
       <Button 
-        className="bg-rally-orange hover:bg-rally-orange/90" 
+        className="bg-asag-red hover:bg-asag-red/90 text-white" 
         onClick={onNext}
       >
         {currentStep < 3 ? "Suivant" : "Confirmer et payer"}

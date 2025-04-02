@@ -68,6 +68,16 @@ export default {
 					blue: '#0EA5E9',
 					dark: '#1A1F2C',
 					gray: '#8E9196',
+					light: '#F8FAFC',
+					red: '#E11D48',
+					green: '#10B981',
+					yellow: '#FBBF24'
+				},
+				asag: {
+					red: '#E11D48',
+					green: '#10B981',
+					yellow: '#FBBF24',
+					dark: '#1A1F2C',
 					light: '#F8FAFC'
 				}
 			},

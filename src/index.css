@@ -37,6 +37,13 @@
 
     --rally-orange: 14 100% 57%;
     --rally-orange-foreground: 0 0% 100%;
+    
+    --asag-red: 346 86% 50%;
+    --asag-green: 158 64% 40%;
+    --asag-yellow: 38 97% 56%;
+    --asag-red-foreground: 0 0% 100%;
+    --asag-green-foreground: 0 0% 100%;
+    --asag-yellow-foreground: 240 10% 3.9%;
   }
 
   .dark {
