@@ -129,6 +129,41 @@ const RegistrationPage = () => {
         </div>
       </main>
       <Footer />
+      
+      {/* Styles spécifiques pour l'impression des listes */}
+      <style jsx global>{`
+        @media print {
+          /* Cacher les éléments non pertinents lors de l'impression de la liste des participants */
+          .print-participants-only .dialog-content {
+            display: block !important;
+            position: relative;
+            max-height: none;
+            overflow: visible;
+          }
+          
+          .print-participants-only .dialog-footer {
+            display: none;
+          }
+          
+          /* Assurer que le tableau s'imprime correctement */
+          .print-participants-only table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          
+          .print-participants-only th,
+          .print-participants-only td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+          }
+          
+          .print-participants-only th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+          }
+        }
+      `}</style>
     </div>
   );
 };

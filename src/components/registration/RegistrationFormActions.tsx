@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Link, useParams } from "react-router-dom";
+import { Printer } from "lucide-react";
 
 interface RegistrationFormActionsProps {
   currentStep: number;
@@ -17,17 +18,30 @@ const RegistrationFormActions: React.FC<RegistrationFormActionsProps> = ({
 }) => {
   const { id } = useParams();
   
+  const handlePrint = () => {
+    window.print();
+  };
+  
   return (
     <CardFooter className="flex justify-between print:hidden">
-      {currentStep > 1 ? (
-        <Button variant="outline" onClick={onPrevious}>
-          Précédent
-        </Button>
-      ) : (
-        <Button variant="outline" asChild>
-          <Link to={`/events/${id}`}>Annuler</Link>
-        </Button>
-      )}
+      <div className="flex gap-2">
+        {currentStep > 1 ? (
+          <Button variant="outline" onClick={onPrevious}>
+            Précédent
+          </Button>
+        ) : (
+          <Button variant="outline" asChild>
+            <Link to={`/events/${id}`}>Annuler</Link>
+          </Button>
+        )}
+        
+        {currentStep === 3 && (
+          <Button variant="outline" onClick={handlePrint} className="flex items-center gap-2">
+            <Printer className="w-4 h-4" />
+            Imprimer
+          </Button>
+        )}
+      </div>
       
       <Button 
         className="bg-rally-orange hover:bg-rally-orange/90" 
