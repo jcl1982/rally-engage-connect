@@ -32,11 +32,7 @@ const Footer = () => {
                   Événements
                 </Link>
               </li>
-              <li>
-                <Link to="/routes" className="text-gray-300 hover:text-white transition-colors">
-                  Itinéraires
-                </Link>
-              </li>
+              {/* Removed the /routes link that doesn't exist in App.tsx routes */}
               <li>
                 <Link to="/profile" className="text-gray-300 hover:text-white transition-colors">
                   Mon Profil

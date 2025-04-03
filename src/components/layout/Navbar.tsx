@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Trophy, Car, MapPin, User, Menu } from "lucide-react";
+import { Trophy, Car, User, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -45,9 +45,8 @@ const Navbar = () => {
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Événements" />
-          <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Mon Rallye" />
-          <NavItem to="/routes" icon={<MapPin className="w-5 h-5" />} label="Itinéraires" />
+          <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Accueil" />
+          <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" />
           <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" />
         </nav>
 
@@ -71,9 +70,8 @@ const Navbar = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-[240px] sm:w-[300px]">
             <nav className="flex flex-col gap-4 mt-8">
-              <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Événements" isMobile />
-              <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Mon Rallye" isMobile />
-              <NavItem to="/routes" icon={<MapPin className="w-5 h-5" />} label="Itinéraires" isMobile />
+              <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Accueil" isMobile />
+              <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" isMobile />
               <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" isMobile />
             </nav>
             <div className="flex flex-col gap-2 mt-8">
