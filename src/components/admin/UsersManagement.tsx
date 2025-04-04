@@ -15,11 +15,6 @@ import { useAdminUsers } from "@/hooks/useAdminUsers";
 // Define the type for user roles
 type UserRole = Database["public"]["Enums"]["app_role"];
 
-// Type guard function to check if a string is a valid UserRole
-function isValidUserRole(role: string): role is UserRole {
-  return role === 'user' || role === 'organizer' || role === 'admin';
-}
-
 // Configuration for pagination
 const USERS_PER_PAGE = 10;
 
@@ -106,6 +101,11 @@ export const UsersManagement: React.FC = () => {
           description: "Impossible de retirer le rôle 'user' de base.",
         });
         return;
+      }
+
+      // Make sure role is a valid UserRole
+      if (!['user', 'organizer', 'admin'].includes(role)) {
+        throw new Error(`Invalid role: ${role}`);
       }
 
       const { error } = await supabase

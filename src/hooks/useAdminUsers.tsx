@@ -25,7 +25,7 @@ export function useAdminUsers() {
     );
   };
 
-  // Function to fetch all users with their roles
+  // Optimized function to fetch all users with their roles in a single query
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -41,45 +41,30 @@ export function useAdminUsers() {
         setLoadingProgress(progress);
       }, 100);
       
-      // Fetch profiles data
+      // Fetch all profiles with their roles in a single query
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name');
+        .select(`
+          id,
+          first_name,
+          last_name,
+          user_roles!user_id(role)
+        `);
       
       if (profilesError) {
         throw profilesError;
       }
       
-      // For each profile, fetch their roles
-      const usersWithRoles = await Promise.all(
-        profilesData.map(async (profile) => {
-          try {
-            const { data: rolesData, error: rolesError } = await supabase
-              .from('user_roles')
-              .select('role')
-              .eq('user_id', profile.id);
-            
-            if (rolesError) throw rolesError;
-            
-            return {
-              id: profile.id,
-              email: null, // Email will be null as we don't have access to it
-              first_name: profile.first_name,
-              last_name: profile.last_name,
-              roles: rolesData.map(r => r.role)
-            };
-          } catch (error) {
-            console.error(`Error fetching roles for user ${profile.id}:`, error);
-            return {
-              id: profile.id,
-              email: null,
-              first_name: profile.first_name,
-              last_name: profile.last_name,
-              roles: []
-            };
-          }
-        })
-      );
+      // Transform the data structure to match UserWithRoles interface
+      const usersWithRoles: UserWithRoles[] = profilesData.map(profile => ({
+        id: profile.id,
+        email: null, // Email will be null as we don't have access to it
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        roles: profile.user_roles 
+          ? profile.user_roles.map((r: { role: string }) => r.role)
+          : []
+      }));
       
       setUsers(usersWithRoles);
       const filtered = filterUsers(usersWithRoles, searchTerm);
