@@ -30,9 +30,9 @@ export const useUserRole = () => {
       console.log(`Fetching roles for user ${user.id}`, { forceRefresh });
 
       // Direct SQL query approach to avoid RLS recursion issues
-      // Using a properly typed approach that works with the SQL function
+      // Use type assertion to make TypeScript happy until the types are properly updated
       const { data, error } = await supabase.rpc(
-        'get_user_roles',
+        'get_user_roles' as any, 
         { user_id: user.id }
       );
 
