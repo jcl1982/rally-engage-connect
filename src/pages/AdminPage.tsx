@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -342,9 +343,11 @@ const AdminPage = () => {
                                         <h4 className="font-medium">Ajouter un rôle:</h4>
                                         <div className="flex gap-2">
                                           <Select
-                                            onValueChange={(value) => {
-                                              const roleValue = value as UserRole;
-                                              assignRole(selectedUser.id, roleValue);
+                                            onValueChange={(value: string) => {
+                                              // Make sure the value is one of the valid UserRole options
+                                              if (value === 'user' || value === 'organizer' || value === 'admin') {
+                                                assignRole(selectedUser.id, value);
+                                              }
                                             }}
                                           >
                                             <SelectTrigger className="w-40">
