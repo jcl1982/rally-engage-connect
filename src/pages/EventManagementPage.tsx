@@ -54,7 +54,10 @@ const EventManagementPage = () => {
         .order("start_date", { ascending: true });
 
       if (error) throw error;
-      setEvents(data as Event[]);
+      
+      // Use a proper type assertion with unknown as an intermediate step
+      const safeData = data as unknown as Event[];
+      setEvents(safeData);
     } catch (error: any) {
       console.error("Erreur lors de la récupération des événements:", error.message);
       toast.error("Impossible de charger les événements.");
