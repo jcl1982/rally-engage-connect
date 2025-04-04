@@ -40,6 +40,11 @@ type UserWithRoles = {
 // Définir le type pour les rôles d'utilisateur
 type UserRole = Database["public"]["Enums"]["app_role"];
 
+// Type guard function to check if a string is a valid UserRole
+function isValidUserRole(role: string): role is UserRole {
+  return role === 'user' || role === 'organizer' || role === 'admin';
+}
+
 const AdminPage = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -343,8 +348,8 @@ const AdminPage = () => {
                                         <div className="flex gap-2">
                                           <Select
                                             onValueChange={(value: string) => {
-                                              if (value === 'user' || value === 'organizer' || value === 'admin') {
-                                                assignRole(selectedUser.id, value as UserRole);
+                                              if (isValidUserRole(value)) {
+                                                assignRole(selectedUser.id, value);
                                               }
                                             }}
                                           >
