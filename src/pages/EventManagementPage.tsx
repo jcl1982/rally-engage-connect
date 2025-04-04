@@ -13,7 +13,7 @@ import Footer from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
 import EventFormDialog from "@/components/events/EventFormDialog";
 import DeleteEventDialog from "@/components/events/DeleteEventDialog";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
 type Event = {
@@ -32,7 +32,6 @@ type Event = {
 
 const EventManagementPage = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
@@ -50,7 +49,7 @@ const EventManagementPage = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("events")
+        .from("events" as any)
         .select("*")
         .order("start_date", { ascending: true });
 
@@ -58,11 +57,7 @@ const EventManagementPage = () => {
       setEvents(data as Event[]);
     } catch (error: any) {
       console.error("Erreur lors de la récupération des événements:", error.message);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de charger les événements."
-      });
+      toast.error("Impossible de charger les événements.");
     } finally {
       setLoading(false);
     }
@@ -86,19 +81,11 @@ const EventManagementPage = () => {
   const handleEventDeleted = () => {
     setIsDeleteDialogOpen(false);
     fetchEvents();
-    toast({
-      title: "Événement supprimé",
-      description: "L'événement a été supprimé avec succès."
-    });
   };
 
   const handleEventSaved = () => {
     setIsEventFormOpen(false);
     fetchEvents();
-    toast({
-      title: "Événement enregistré",
-      description: "L'événement a été enregistré avec succès."
-    });
   };
 
   const getStatusBadge = (status: string) => {

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 // Schéma de validation pour le formulaire d'événement
 const eventSchema = z.object({
@@ -98,7 +99,7 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
       if (event) {
         // Mise à jour d'un événement existant
         const { error } = await supabase
-          .from("events")
+          .from("events" as any)
           .update({
             title: data.title,
             description: data.description || null,
@@ -107,14 +108,14 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
             end_date: new Date(data.end_date).toISOString(),
             status: data.status,
             image_url: data.image_url || null,
-          })
+          } as any)
           .eq("id", event.id);
 
         if (error) throw error;
       } else {
         // Création d'un nouvel événement
         const { error } = await supabase
-          .from("events")
+          .from("events" as any)
           .insert({
             title: data.title,
             description: data.description || null,
@@ -124,15 +125,17 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
             status: data.status,
             image_url: data.image_url || null,
             organizer_id: user.id,
-          });
+          } as any);
 
         if (error) throw error;
       }
 
+      toast.success(event ? "Événement mis à jour avec succès" : "Événement créé avec succès");
       onEventSaved();
     } catch (error: any) {
       console.error("Erreur lors de l'enregistrement de l'événement:", error);
       setError(error.message || "Une erreur est survenue");
+      toast.error("Erreur lors de l'enregistrement de l'événement");
     } finally {
       setIsSubmitting(false);
     }

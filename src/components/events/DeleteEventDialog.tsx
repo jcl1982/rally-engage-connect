@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface DeleteEventDialogProps {
   open: boolean;
@@ -22,17 +23,20 @@ const DeleteEventDialog = ({ open, onOpenChange, event, onEventDeleted }: Delete
     setError(null);
 
     try {
+      // Use type assertion to tell TypeScript this is valid
       const { error } = await supabase
-        .from("events")
+        .from("events" as any)
         .delete()
         .eq("id", event.id);
 
       if (error) throw error;
       
+      toast.success("Événement supprimé avec succès");
       onEventDeleted();
     } catch (error: any) {
       console.error("Erreur lors de la suppression:", error);
       setError(error.message || "Une erreur est survenue lors de la suppression");
+      toast.error("Erreur lors de la suppression de l'événement");
       setIsDeleting(false);
     }
   };
