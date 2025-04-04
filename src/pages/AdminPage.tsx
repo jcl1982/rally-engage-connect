@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -344,7 +343,6 @@ const AdminPage = () => {
                                         <div className="flex gap-2">
                                           <Select
                                             onValueChange={(value) => {
-                                              // Conversion explicite en UserRole pour s'assurer que la valeur est du bon type
                                               const roleValue = value as UserRole;
                                               assignRole(selectedUser.id, roleValue);
                                             }}
