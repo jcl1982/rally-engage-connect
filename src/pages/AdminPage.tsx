@@ -4,41 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { useToast } from "@/components/ui/use-toast";
-import { Loader, Shield, UserCog } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Loader, Shield } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Database } from "@/integrations/supabase/types";
+import { UserWithRoles } from "@/types/admin";
 
-// Type pour les utilisateurs avec leurs rôles
-type UserWithRoles = {
-  id: string;
-  email: string | null; // Rendons l'email nullable pour correspondre aux données
-  first_name: string | null;
-  last_name: string | null;
-  roles: string[];
-};
+// Import our new components
+import UserTable from "@/components/admin/UserTable";
+import UserRoleDialog from "@/components/admin/UserRoleDialog";
+import UserSearch from "@/components/admin/UserSearch";
+import AccessDenied from "@/components/admin/AccessDenied";
 
-// Définir le type pour les rôles d'utilisateur
+// Define the type for user roles
 type UserRole = Database["public"]["Enums"]["app_role"];
 
 // Type guard function to check if a string is a valid UserRole
@@ -198,25 +178,7 @@ const AdminPage = () => {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-grow container max-w-6xl mx-auto py-8 px-4">
-          <div className="flex items-center justify-center h-full">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle className="text-center text-red-500">
-                  Accès refusé
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center mb-4">
-                  Vous n'avez pas les autorisations nécessaires pour accéder à cette page.
-                </p>
-                <div className="flex justify-center">
-                  <Button asChild>
-                    <a href="/">Retour à l'accueil</a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <AccessDenied />
         </main>
         <Footer />
       </div>
@@ -240,155 +202,36 @@ const AdminPage = () => {
               <CardTitle>Gestion des Rôles Utilisateurs</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4">
-                <Input
-                  placeholder="Rechercher un utilisateur..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="max-w-sm"
-                />
-              </div>
+              <UserSearch 
+                searchTerm={searchTerm} 
+                onSearchChange={setSearchTerm}
+              />
 
               {loading ? (
                 <div className="flex justify-center items-center py-10">
                   <Loader className="h-8 w-8 animate-spin text-rally-orange" />
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Utilisateur</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Rôles</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredUsers.length > 0 ? (
-                        filteredUsers.map((user) => (
-                          <TableRow key={user.id}>
-                            <TableCell>
-                              {user.first_name} {user.last_name}
-                            </TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>
-                              <div className="flex flex-wrap gap-1">
-                                {user.roles.map((role) => (
-                                  <Badge
-                                    key={role}
-                                    variant={role === 'admin' ? 'destructive' : role === 'organizer' ? 'outline' : 'default'}
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                      if (user.roles.length > 1 || role !== 'user') {
-                                        removeRole(user.id, role);
-                                      } else {
-                                        toast({
-                                          title: "Information",
-                                          description: "Impossible de retirer le rôle 'user' de base.",
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    {role} ×
-                                  </Badge>
-                                ))}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => setSelectedUser(user)}
-                                  >
-                                    <UserCog className="h-4 w-4 mr-1" /> 
-                                    Modifier rôles
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      Gérer les rôles de {selectedUser?.first_name} {selectedUser?.last_name}
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                      Ajouter ou retirer des rôles pour cet utilisateur.
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  
-                                  {selectedUser && (
-                                    <div className="space-y-4 py-4">
-                                      <div className="space-y-2">
-                                        <h4 className="font-medium">Rôles actuels:</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                          {selectedUser.roles.map((role) => (
-                                            <Badge
-                                              key={role}
-                                              variant={role === 'admin' ? 'destructive' : role === 'organizer' ? 'outline' : 'default'}
-                                              className="cursor-pointer"
-                                              onClick={() => {
-                                                if (selectedUser.roles.length > 1 || role !== 'user') {
-                                                  removeRole(selectedUser.id, role);
-                                                } else {
-                                                  toast({
-                                                    title: "Information",
-                                                    description: "Impossible de retirer le rôle 'user' de base.",
-                                                  });
-                                                }
-                                              }}
-                                            >
-                                              {role} ×
-                                            </Badge>
-                                          ))}
-                                        </div>
-                                      </div>
-                                      
-                                      <div className="space-y-2">
-                                        <h4 className="font-medium">Ajouter un rôle:</h4>
-                                        <div className="flex gap-2">
-                                          <Select
-                                            onValueChange={(value) => {
-                                              // Make sure the value is a valid UserRole before passing it to assignRole
-                                              if (isValidUserRole(value)) {
-                                                assignRole(selectedUser.id, value);
-                                              }
-                                            }}
-                                          >
-                                            <SelectTrigger className="w-40">
-                                              <SelectValue placeholder="Choisir un rôle" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              <SelectItem value="user">Utilisateur</SelectItem>
-                                              <SelectItem value="organizer">Organisateur</SelectItem>
-                                              <SelectItem value="admin">Administrateur</SelectItem>
-                                            </SelectContent>
-                                          </Select>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </DialogContent>
-                              </Dialog>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center py-4">
-                            Aucun utilisateur trouvé.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                <UserTable 
+                  users={filteredUsers} 
+                  onRemoveRole={removeRole}
+                  onSelectUser={setSelectedUser}
+                  loading={loading}
+                />
               )}
             </CardContent>
           </Card>
         </div>
       </main>
       <Footer />
+      
+      <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
+        <UserRoleDialog 
+          selectedUser={selectedUser} 
+          onAssignRole={assignRole}
+          onRemoveRole={removeRole}
+        />
+      </Dialog>
     </div>
   );
 };
