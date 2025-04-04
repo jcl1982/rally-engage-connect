@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -161,18 +162,18 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
 
       if (event) {
         const { error } = await supabase
-          .from("events" as any)
-          .update(eventData as any)
+          .from("events")
+          .update(eventData)
           .eq("id", event.id);
 
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from("events" as any)
+          .from("events")
           .insert({
             ...eventData,
             organizer_id: user.id,
-          } as any);
+          });
 
         if (error) throw error;
       }

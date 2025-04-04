@@ -11,42 +11,66 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
           description: string | null
+          difficulty_level: string | null
           end_date: string
+          entry_fee: number | null
+          event_type: string | null
           id: string
           image_url: string | null
           location: string
+          max_participants: number | null
           organizer_id: string
+          regulations_url: string | null
           start_date: string
           status: string
           title: string
+          total_distance: string | null
           updated_at: string
         }
         Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           description?: string | null
+          difficulty_level?: string | null
           end_date: string
+          entry_fee?: number | null
+          event_type?: string | null
           id?: string
           image_url?: string | null
           location: string
+          max_participants?: number | null
           organizer_id: string
+          regulations_url?: string | null
           start_date: string
           status?: string
           title: string
+          total_distance?: string | null
           updated_at?: string
         }
         Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           description?: string | null
+          difficulty_level?: string | null
           end_date?: string
+          entry_fee?: number | null
+          event_type?: string | null
           id?: string
           image_url?: string | null
           location?: string
+          max_participants?: number | null
           organizer_id?: string
+          regulations_url?: string | null
           start_date?: string
           status?: string
           title?: string
+          total_distance?: string | null
           updated_at?: string
         }
         Relationships: []
