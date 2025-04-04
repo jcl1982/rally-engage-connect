@@ -31,7 +31,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 // Type pour les utilisateurs avec leurs rôles
 type UserWithRoles = {
   id: string;
-  email: string;
+  email: string | null; // Rendons l'email nullable pour correspondre aux données
   first_name: string | null;
   last_name: string | null;
   roles: string[];
@@ -69,16 +69,10 @@ const AdminPage = () => {
           
           if (rolesError) throw rolesError;
           
-          // Récupérer l'email de l'utilisateur si disponible
-          const { data: userData } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('id', profile.id)
-            .single();
-          
+          // On définit un email par défaut puisque nous n'avons pas accès aux emails via l'API publique
           return {
             id: profile.id,
-            email: userData?.email || 'Email non disponible',
+            email: 'Email non disponible', // Email par défaut
             first_name: profile.first_name,
             last_name: profile.last_name,
             roles: rolesData.map(r => r.role)
@@ -184,7 +178,7 @@ const AdminPage = () => {
 
   // Filtrer les utilisateurs par le terme de recherche
   const filteredUsers = users.filter(user => 
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (user.first_name && user.first_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (user.last_name && user.last_name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
