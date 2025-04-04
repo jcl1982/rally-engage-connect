@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/auth/PrivateRoute";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -29,7 +30,12 @@ const App = () => (
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:id" element={<EventDetailsPage />} />
             <Route path="/events/:id/register" element={<RegistrationPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            
+            {/* Routes protégées */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+            
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="*" element={<NotFound />} />
