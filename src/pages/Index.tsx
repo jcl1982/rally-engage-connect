@@ -15,10 +15,10 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden">
       <div 
-        className="absolute inset-0 z-0 bg-cover bg-center opacity-20" 
+        className="absolute inset-0 z-0 bg-cover bg-center opacity-30" 
         style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1631194758628-71ec7c35137e?q=80&w=2070&auto=format&fit=crop')",
-          backgroundPosition: "center 30%" 
+          backgroundImage: "url('https://images.unsplash.com/photo-1611566026373-c6c8da0ea861?q=80&w=2070&auto=format&fit=crop')",
+          backgroundPosition: "center center" 
         }}
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-background" />
