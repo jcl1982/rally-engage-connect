@@ -103,8 +103,8 @@ export const UsersManagement: React.FC = () => {
         return;
       }
 
-      // Make sure role is a valid UserRole
-      if (!['user', 'organizer', 'admin'].includes(role)) {
+      // Type guard to ensure role is a valid UserRole
+      if (role !== 'user' && role !== 'organizer' && role !== 'admin') {
         throw new Error(`Invalid role: ${role}`);
       }
 
@@ -112,7 +112,7 @@ export const UsersManagement: React.FC = () => {
         .from('user_roles')
         .delete()
         .eq('user_id', userId)
-        .eq('role', role);
+        .eq('role', role as UserRole);
 
       if (error) throw error;
 

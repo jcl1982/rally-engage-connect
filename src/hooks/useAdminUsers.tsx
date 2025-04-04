@@ -41,29 +41,40 @@ export function useAdminUsers() {
         setLoadingProgress(progress);
       }, 100);
       
-      // Fetch all profiles with their roles in a single query
+      // First, fetch all profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          user_roles!user_id(role)
-        `);
+        .select('id, first_name, last_name');
       
       if (profilesError) {
         throw profilesError;
       }
+
+      // Then, fetch roles for each profile in a separate query
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
       
-      // Transform the data structure to match UserWithRoles interface
+      if (rolesError) {
+        throw rolesError;
+      }
+
+      // Group roles by user_id
+      const rolesByUser: Record<string, string[]> = {};
+      rolesData.forEach(role => {
+        if (!rolesByUser[role.user_id]) {
+          rolesByUser[role.user_id] = [];
+        }
+        rolesByUser[role.user_id].push(role.role);
+      });
+      
+      // Map profiles to UserWithRoles objects
       const usersWithRoles: UserWithRoles[] = profilesData.map(profile => ({
         id: profile.id,
         email: null, // Email will be null as we don't have access to it
         first_name: profile.first_name,
         last_name: profile.last_name,
-        roles: profile.user_roles 
-          ? profile.user_roles.map((r: { role: string }) => r.role)
-          : []
+        roles: rolesByUser[profile.id] || []
       }));
       
       setUsers(usersWithRoles);
