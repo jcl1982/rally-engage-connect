@@ -27,6 +27,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Extraire le paramètre redirect de l'URL si présent
+  const queryParams = new URLSearchParams(location.search);
+  const redirectPath = queryParams.get('redirect') || '/';
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -42,12 +47,12 @@ const LoginPage = () => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        navigate('/');
+        navigate(redirectPath);
       }
     };
     
     checkSession();
-  }, [navigate]);
+  }, [navigate, redirectPath]);
   
   const handleLogin = async (values: LoginFormValues) => {
     try {
@@ -67,8 +72,8 @@ const LoginPage = () => {
         description: "Vous êtes maintenant connecté à votre compte ASA Guadeloupe.",
       });
       
-      // Navigate to the home page after successful login
-      navigate("/");
+      // Navigate to the redirect path after successful login
+      navigate(redirectPath);
     } catch (error: any) {
       console.error("Erreur lors de la connexion:", error);
       toast({

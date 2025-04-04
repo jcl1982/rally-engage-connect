@@ -22,15 +22,21 @@ export const useUserRole = () => {
       }
 
       try {
+        setLoading(true);
+        
+        // Utilisation de refresh: true pour éviter la mise en cache
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
-          .eq("user_id", user.id);
+          .eq("user_id", user.id)
+          .order('role');
 
         if (error) throw error;
         
         // Transformer les données en tableau de rôles
-        setRoles(data?.map((r) => r.role as UserRole) || []);
+        const userRoles = data?.map((r) => r.role as UserRole) || [];
+        console.log("User roles fetched for", user.id, ":", userRoles);
+        setRoles(userRoles);
       } catch (err: any) {
         console.error("Erreur lors de la récupération des rôles:", err);
         setError(err.message || "Erreur lors du chargement des rôles");
