@@ -25,26 +25,32 @@ export const useUserRole = () => {
 
     try {
       setLoading(true);
+      setError(null); // Reset error state before fetching
       
       console.log(`Fetching roles for user ${user.id}`, { forceRefresh });
 
-      // Use the { head: true } option to force Supabase to bypass cache
+      // Fetch without using .throwOnError() to handle errors more gracefully
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq("user_id", user.id)
-        .order('role')
-        .throwOnError();
+        .order('role');
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur lors de la récupération des rôles:", error);
+        setError(error.message);
+        toast.error("Impossible de charger vos rôles d'utilisateur. Veuillez réessayer.");
+        // Continue with empty roles array rather than throwing
+      }
       
-      // Transform data to array of roles
+      // Transform data to array of roles, default to empty array if data is null
       const userRoles = data?.map((r) => r.role as UserRole) || [];
       console.log("User roles fetched for", user.id, ":", userRoles);
+      
       setRoles(userRoles);
       setLastRefresh(Date.now());
     } catch (err: any) {
-      console.error("Erreur lors de la récupération des rôles:", err);
+      console.error("Exception lors de la récupération des rôles:", err);
       setError(err.message || "Erreur lors du chargement des rôles");
       toast.error("Impossible de charger vos rôles d'utilisateur");
     } finally {
@@ -59,6 +65,7 @@ export const useUserRole = () => {
     } else {
       setRoles([]);
       setLoading(false);
+      setError(null);
     }
   }, [user, fetchUserRoles]);
 

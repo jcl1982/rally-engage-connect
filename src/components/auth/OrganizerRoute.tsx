@@ -13,11 +13,13 @@ const OrganizerRoute = () => {
     loading: roleLoading, 
     roles, 
     refreshRoles,
-    lastRefresh 
+    lastRefresh,
+    error: roleError 
   } = useUserRole();
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasOrganizerAccess, setHasOrganizerAccess] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   
   const loading = authLoading || roleLoading;
 
@@ -29,6 +31,19 @@ const OrganizerRoute = () => {
     }
   }, [user, refreshRoles]);
   
+  // Handle role errors and retry logic
+  useEffect(() => {
+    if (roleError && user && retryCount < 3) {
+      console.log(`OrganizerRoute: Error loading roles, retrying (${retryCount + 1}/3)...`);
+      const timer = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        refreshRoles();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [roleError, user, retryCount, refreshRoles]);
+  
   // Set state values based on auth and role status
   useEffect(() => {
     if (!loading) {
@@ -39,10 +54,11 @@ const OrganizerRoute = () => {
         userId: user?.id,
         roles,
         isOrganizer: isOrganizer(),
-        lastRoleRefresh: new Date(lastRefresh).toISOString()
+        lastRoleRefresh: lastRefresh ? new Date(lastRefresh).toISOString() : 'never',
+        roleError
       });
     }
-  }, [user, loading, roles, isOrganizer, lastRefresh]);
+  }, [user, loading, roles, isOrganizer, lastRefresh, roleError]);
 
   if (loading) {
     return (
@@ -56,6 +72,12 @@ const OrganizerRoute = () => {
     console.log("OrganizerRoute: User not authenticated, redirecting to login");
     // Rediriger vers la page de connexion avec l'URL actuelle comme redirect
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  }
+
+  if (roleError && retryCount >= 3) {
+    console.error("OrganizerRoute: Failed to load roles after multiple attempts", roleError);
+    toast.error("Impossible de vérifier vos permissions. Veuillez vous reconnecter.");
+    return <Navigate to="/login" replace />;
   }
 
   if (!hasOrganizerAccess) {
