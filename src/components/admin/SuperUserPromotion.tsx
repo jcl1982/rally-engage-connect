@@ -49,34 +49,40 @@ const SuperUserPromotion: React.FC = () => {
     { value: "organizer", label: "Organisateur" },
   ];
 
-  // Promotion automatique pour Jerome CLEONIS
+  // Promotion automatique pour les utilisateurs spécifiques
   React.useEffect(() => {
-    const promoteJeromeCleonis = async () => {
-      const specificEmail = "j.cleonis1982@gmail.com";
-      try {
-        console.log("Tentative de promotion de Jerome CLEONIS comme organisateur");
-        const { data, error } = await supabase.functions.invoke('promote-user-role', {
-          body: { email: specificEmail, role: "organizer" }
-        });
+    const promoteSpecificUsers = async () => {
+      const specificUsers = [
+        { email: "j.cleonis1982@gmail.com", role: "organizer" },
+        { email: "tresorier@asaguadeloupe.fr", role: "organizer" }
+      ];
 
-        if (error) {
-          console.error("Erreur lors de la promotion automatique:", error.message);
-          return;
+      for (const user of specificUsers) {
+        try {
+          console.log(`Tentative de promotion de ${user.email} comme ${user.role}`);
+          const { data, error } = await supabase.functions.invoke('promote-user-role', {
+            body: { email: user.email, role: user.role }
+          });
+
+          if (error) {
+            console.error(`Erreur lors de la promotion automatique de ${user.email}:`, error.message);
+            continue;
+          }
+
+          if (data.error) {
+            console.error(`Erreur API lors de la promotion automatique de ${user.email}:`, data.error);
+            continue;
+          }
+
+          console.log(`Promotion réussie pour ${user.email}:`, data.message);
+        } catch (error: any) {
+          console.error(`Exception lors de la promotion automatique de ${user.email}:`, error.message);
         }
-
-        if (data.error) {
-          console.error("Erreur API lors de la promotion automatique:", data.error);
-          return;
-        }
-
-        console.log("Promotion réussie:", data.message);
-      } catch (error: any) {
-        console.error("Exception lors de la promotion automatique:", error.message);
       }
     };
 
     // Exécuter la promotion automatique au chargement du composant
-    promoteJeromeCleonis();
+    promoteSpecificUsers();
   }, []);
 
   return (
