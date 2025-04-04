@@ -1,10 +1,11 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Enums } from "@/integrations/supabase/types";
+import { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/context/AuthContext";
 
-type UserRole = Enums<"app_role"> | null;
+// Définir le type pour les rôles d'utilisateur
+type UserRole = Database["public"]["Enums"]["app_role"];
 
 export const useUserRole = () => {
   const { user } = useAuth();
@@ -22,13 +23,14 @@ export const useUserRole = () => {
 
       try {
         const { data, error } = await supabase
-          .from("user_roles")
-          .select("role")
+          .from('user_roles')
+          .select('role')
           .eq("user_id", user.id);
 
         if (error) throw error;
         
-        setRoles(data.map((r) => r.role) || []);
+        // Transformer les données en tableau de rôles
+        setRoles(data?.map((r) => r.role as UserRole) || []);
       } catch (err: any) {
         console.error("Erreur lors de la récupération des rôles:", err);
         setError(err.message || "Erreur lors du chargement des rôles");
@@ -40,16 +42,19 @@ export const useUserRole = () => {
     fetchUserRoles();
   }, [user]);
 
+  // Vérifier si l'utilisateur a un rôle spécifique
   const hasRole = (role: UserRole): boolean => {
     return roles.includes(role);
   };
 
+  // Vérifier si l'utilisateur est un organisateur ou un administrateur
   const isOrganizer = (): boolean => {
-    return hasRole("organizer") || hasRole("admin");
+    return hasRole('organizer' as UserRole) || hasRole('admin' as UserRole);
   };
 
+  // Vérifier si l'utilisateur est un administrateur
   const isAdmin = (): boolean => {
-    return hasRole("admin");
+    return hasRole('admin' as UserRole);
   };
 
   return {
