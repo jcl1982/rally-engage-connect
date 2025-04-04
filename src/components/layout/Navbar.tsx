@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Trophy, Car, User, Menu, LogOut, LayoutDashboard } from "lucide-react";
+import { Car, User, Menu, LogOut, LayoutDashboard } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -53,14 +53,18 @@ const Navbar = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-1">
-            <Trophy className="w-6 h-6 text-asag-red" />
+            <img 
+              src="/lovable-uploads/27367e6e-c746-4f09-b941-9fe5dcaa7b35.png" 
+              alt="ASA Guadeloupe Logo" 
+              className="h-8 w-8" 
+            />
             <span className="font-bold text-lg">ASA Guadeloupe</span>
           </Link>
         </div>
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Accueil" />
+          <NavItem to="/" icon={<img src="/lovable-uploads/27367e6e-c746-4f09-b941-9fe5dcaa7b35.png" alt="ASA Logo" className="w-5 h-5" />} label="Accueil" />
           <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" />
           {user && (
             <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" />
@@ -103,7 +107,7 @@ const Navbar = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-[240px] sm:w-[300px]">
             <nav className="flex flex-col gap-4 mt-8">
-              <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Accueil" isMobile />
+              <NavItem to="/" icon={<img src="/lovable-uploads/27367e6e-c746-4f09-b941-9fe5dcaa7b35.png" alt="ASA Logo" className="w-5 h-5" />} label="Accueil" isMobile />
               <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" isMobile />
               {user && (
                 <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" isMobile />

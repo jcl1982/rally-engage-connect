@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Clock, MapPin, Flag, Calendar, Users } from "lucide-react";
+import { Clock, MapPin, Flag, Calendar, Users } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
@@ -25,6 +24,13 @@ const HeroSection = () => {
       
       <div className="container relative z-20 pt-20 pb-24 md:pt-32 md:pb-40">
         <div className="max-w-3xl mx-auto text-center">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/lovable-uploads/27367e6e-c746-4f09-b941-9fe5dcaa7b35.png" 
+              alt="ASA Guadeloupe Logo" 
+              className="h-32 w-32 animate-fade-in"
+            />
+          </div>
           <Badge 
             className="mb-6 gradient-orange-blue animate-fade-in"
             variant="outline"
