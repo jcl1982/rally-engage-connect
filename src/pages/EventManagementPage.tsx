@@ -51,6 +51,7 @@ const EventManagementPage = () => {
       const { data, error } = await supabase
         .from("events" as any)
         .select("*")
+        .eq("organizer_id", user.id)
         .order("start_date", { ascending: true });
 
       if (error) throw error;
