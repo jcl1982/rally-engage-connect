@@ -21,6 +21,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { UserWithRoles } from "@/types/admin";
 
@@ -76,7 +77,7 @@ const UserTable: React.FC<UserTableProps> = ({
       if (startPage > 2) {
         items.push(
           <PaginationItem key="ellipsis-start">
-            <PaginationLink disabled>...</PaginationLink>
+            <PaginationEllipsis />
           </PaginationItem>
         );
       }
@@ -102,7 +103,7 @@ const UserTable: React.FC<UserTableProps> = ({
       if (endPage < totalPages - 1) {
         items.push(
           <PaginationItem key="ellipsis-end">
-            <PaginationLink disabled>...</PaginationLink>
+            <PaginationEllipsis />
           </PaginationItem>
         );
       }
