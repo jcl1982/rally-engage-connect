@@ -13,7 +13,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-// Schéma de validation pour le formulaire d'événement
 const eventSchema = z.object({
   title: z.string().min(3, "Le titre doit comporter au moins 3 caractères"),
   description: z.string().optional(),
@@ -26,7 +25,6 @@ const eventSchema = z.object({
   }),
   status: z.enum(["draft", "published", "cancelled"]),
   image_url: z.string().optional(),
-  // Nouveaux champs pour les détails de l'épreuve - Les types sont définis comme string pour l'interface utilisateur
   max_participants: z.string().optional().transform(val => val === "" ? null : parseInt(val, 10)),
   entry_fee: z.string().optional().transform(val => val === "" ? null : parseFloat(val)),
   regulations_url: z.string().optional(),
@@ -37,7 +35,6 @@ const eventSchema = z.object({
   contact_phone: z.string().optional(),
 });
 
-// Type pour les valeurs du formulaire (avant transformation)
 type EventFormValues = {
   title: string;
   description?: string;
@@ -46,8 +43,8 @@ type EventFormValues = {
   end_date: string;
   status: "draft" | "published" | "cancelled";
   image_url?: string;
-  max_participants?: string;  // String for form input
-  entry_fee?: string;        // String for form input
+  max_participants?: string;
+  entry_fee?: string;
   regulations_url?: string;
   event_type?: "rally" | "hillclimb" | "circuit" | "slalom" | "other";
   difficulty_level?: "beginner" | "intermediate" | "advanced" | "expert";
@@ -69,7 +66,6 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("basic");
   
-  // Initialiser le formulaire avec react-hook-form et zod
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
@@ -91,13 +87,11 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
     },
   });
 
-  // Mettre à jour les valeurs du formulaire lorsque l'événement change
   useEffect(() => {
     if (event) {
       const startDate = new Date(event.start_date);
       const endDate = new Date(event.end_date);
       
-      // Format YYYY-MM-DD pour les inputs de type date
       const formatDateForInput = (date: Date) => {
         return date.toISOString().split('T')[0];
       };
@@ -147,7 +141,6 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
     setError(null);
 
     try {
-      // Let the schema transformations handle converting strings to numbers
       const eventData = {
         title: data.title,
         description: data.description || null,
@@ -156,7 +149,6 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
         end_date: new Date(data.end_date).toISOString(),
         status: data.status,
         image_url: data.image_url || null,
-        // These will be transformed by the schema
         max_participants: data.max_participants === "" ? null : parseInt(data.max_participants || "0", 10),
         entry_fee: data.entry_fee === "" ? null : parseFloat(data.entry_fee || "0"),
         regulations_url: data.regulations_url || null,
@@ -168,7 +160,6 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
       };
 
       if (event) {
-        // Mise à jour d'un événement existant
         const { error } = await supabase
           .from("events" as any)
           .update(eventData as any)
@@ -176,7 +167,6 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
 
         if (error) throw error;
       } else {
-        // Création d'un nouvel événement
         const { error } = await supabase
           .from("events" as any)
           .insert({
