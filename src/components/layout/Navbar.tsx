@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Car, User, Menu, LogOut, LayoutDashboard } from "lucide-react";
+import { Car, User, Menu, LogOut, LayoutDashboard, Shield } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -37,7 +37,7 @@ const NavItem = ({ to, icon, label, isMobile = false }: NavItemProps) => {
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
-  const { isOrganizer, loading: roleLoading } = useUserRole();
+  const { isOrganizer, isAdmin, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -71,6 +71,9 @@ const Navbar = () => {
           )}
           {user && !roleLoading && isOrganizer() && (
             <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" />
+          )}
+          {user && !roleLoading && isAdmin() && (
+            <NavItem to="/admin" icon={<Shield className="w-5 h-5" />} label="Administration" />
           )}
         </nav>
 
@@ -114,6 +117,9 @@ const Navbar = () => {
               )}
               {user && !roleLoading && isOrganizer() && (
                 <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" isMobile />
+              )}
+              {user && !roleLoading && isAdmin() && (
+                <NavItem to="/admin" icon={<Shield className="w-5 h-5" />} label="Administration" isMobile />
               )}
             </nav>
             <div className="flex flex-col gap-2 mt-8">
