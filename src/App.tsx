@@ -18,7 +18,10 @@ import OrganizerRoute from "./components/auth/OrganizerRoute";
 import AdminRoute from "./components/auth/AdminRoute";
 import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 import EventManagementPage from "./pages/EventManagementPage";
+import OrganizerParticipantsPage from "./pages/OrganizerParticipantsPage";
+import OrganizerSettingsPage from "./pages/OrganizerSettingsPage";
 import AdminPage from "./pages/AdminPage";
+import OrganizerLayout from "./components/organizer/OrganizerLayout";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -41,10 +44,14 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
             
-            {/* Routes protégées pour organisateurs */}
+            {/* Routes protégées pour organisateurs avec le nouveau layout */}
             <Route element={<OrganizerRoute />}>
-              <Route path="/organizer" element={<OrganizerDashboardPage />} />
-              <Route path="/organizer/events" element={<EventManagementPage />} />
+              <Route element={<OrganizerLayout />}>
+                <Route path="/organizer" element={<OrganizerDashboardPage />} />
+                <Route path="/organizer/events" element={<EventManagementPage />} />
+                <Route path="/organizer/participants" element={<OrganizerParticipantsPage />} />
+                <Route path="/organizer/settings" element={<OrganizerSettingsPage />} />
+              </Route>
             </Route>
             
             {/* Routes protégées pour administrateurs */}
