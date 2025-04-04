@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Format d'email invalide" }),
@@ -52,16 +54,18 @@ const LoginPage = () => {
   
   const handleLogin = async (values: LoginFormValues) => {
     try {
-      const { email, password } = values;
+      console.log("Attempting login with email:", values.email);
       
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password
       });
       
       if (error) {
         throw error;
       }
+      
+      console.log("Login successful, session:", data.session?.user?.id);
       
       toast({
         title: "Connexion réussie",
@@ -73,7 +77,7 @@ const LoginPage = () => {
       console.error("Erreur lors de la connexion:", error);
       toast({
         title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect. Veuillez réessayer.",
+        description: error.message || "Email ou mot de passe incorrect. Veuillez réessayer.",
         variant: "destructive",
       });
     }

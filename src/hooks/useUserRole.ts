@@ -29,30 +29,26 @@ export const useUserRole = () => {
       
       console.log(`Fetching roles for user ${user.id}`, { forceRefresh });
 
-      // Fetch without using .throwOnError() to handle errors more gracefully
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq("user_id", user.id)
-        .order('role');
+      // Direct SQL query approach to avoid RLS recursion issues
+      const { data, error } = await supabase.rpc('get_user_roles', {
+        user_id: user.id
+      });
 
       if (error) {
         console.error("Erreur lors de la récupération des rôles:", error);
         setError(error.message);
-        toast.error("Impossible de charger vos rôles d'utilisateur. Veuillez réessayer.");
-        // Continue with empty roles array rather than throwing
+        // Don't show toast here to avoid overwhelming the user
+      } else {
+        // Transform data to array of roles, default to empty array if data is null
+        const userRoles = data || [];
+        console.log("User roles fetched for", user.id, ":", userRoles);
+        
+        setRoles(userRoles as UserRole[]);
+        setLastRefresh(Date.now());
       }
-      
-      // Transform data to array of roles, default to empty array if data is null
-      const userRoles = data?.map((r) => r.role as UserRole) || [];
-      console.log("User roles fetched for", user.id, ":", userRoles);
-      
-      setRoles(userRoles);
-      setLastRefresh(Date.now());
     } catch (err: any) {
       console.error("Exception lors de la récupération des rôles:", err);
       setError(err.message || "Erreur lors du chargement des rôles");
-      toast.error("Impossible de charger vos rôles d'utilisateur");
     } finally {
       setLoading(false);
     }
@@ -71,21 +67,18 @@ export const useUserRole = () => {
 
   // Check if user has a specific role
   const hasRole = useCallback((role: UserRole): boolean => {
-    console.log(`Checking if user has role: ${role}`, roles);
     return roles.includes(role);
   }, [roles]);
 
   // Check if user is an organizer or admin
   const isOrganizer = useCallback((): boolean => {
-    console.log("Checking if user is organizer or admin", roles);
     return hasRole('organizer' as UserRole) || hasRole('admin' as UserRole);
-  }, [hasRole, roles]);
+  }, [hasRole]);
 
   // Check if user is an admin
   const isAdmin = useCallback((): boolean => {
-    console.log("Checking if user is admin", roles);
     return hasRole('admin' as UserRole);
-  }, [hasRole, roles]);
+  }, [hasRole]);
 
   // Function to manually refresh roles
   const refreshRoles = useCallback(() => {
