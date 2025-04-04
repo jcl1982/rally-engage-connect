@@ -7,3 +7,15 @@ export type UserWithRoles = {
   last_name: string | null;
   roles: string[];
 };
+
+// Role definition with display properties
+export type RoleInfo = {
+  title: string;
+  description: string;
+  icon: React.ComponentType<any>;
+  color: string;
+};
+
+export type RolesInfo = {
+  [key: string]: RoleInfo;
+};

@@ -12,11 +12,12 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Database } from "@/integrations/supabase/types";
 import { UserWithRoles } from "@/types/admin";
 
-// Import our new components
+// Import our components
 import UserTable from "@/components/admin/UserTable";
 import UserRoleDialog from "@/components/admin/UserRoleDialog";
 import UserSearch from "@/components/admin/UserSearch";
 import AccessDenied from "@/components/admin/AccessDenied";
+import { Progress } from "@/components/ui/progress";
 
 // Define the type for user roles
 type UserRole = Database["public"]["Enums"]["app_role"];
@@ -26,73 +27,152 @@ function isValidUserRole(role: string): role is UserRole {
   return role === 'user' || role === 'organizer' || role === 'admin';
 }
 
+// Configuration for pagination
+const USERS_PER_PAGE = 10;
+
 const AdminPage = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: roleLoading } = useUserRole();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserWithRoles[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fonction pour récupérer tous les utilisateurs avec leurs rôles
+  // Function to filter users based on search term
+  const filterUsers = (allUsers: UserWithRoles[], term: string) => {
+    if (!term) return allUsers;
+    
+    return allUsers.filter(user => 
+      (user.email && user.email.toLowerCase().includes(term.toLowerCase())) ||
+      (user.first_name && user.first_name.toLowerCase().includes(term.toLowerCase())) ||
+      (user.last_name && user.last_name.toLowerCase().includes(term.toLowerCase()))
+    );
+  };
+
+  // Calculate pagination values
+  const totalUsers = filteredUsers.length;
+  const totalPages = Math.max(1, Math.ceil(totalUsers / USERS_PER_PAGE));
+  
+  // Ensure current page is valid
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(Math.max(1, totalPages));
+    }
+  }, [totalPages, currentPage]);
+
+  // Get current users for the page
+  const getCurrentPageUsers = () => {
+    const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+    return filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+  };
+
+  // Function to fetch all users with their roles
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // Récupérer la liste des utilisateurs (limité aux informations disponibles via l'API publique)
+      // Start progress animation
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += 5;
+        if (progress > 90) {
+          clearInterval(progressInterval);
+        }
+        setLoadingProgress(progress);
+      }, 100);
+      
+      // Fetch profiles data
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, first_name, last_name');
       
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        throw profilesError;
+      }
       
-      // Pour chaque utilisateur, récupérer ses rôles
+      // For each profile, fetch their roles
       const usersWithRoles = await Promise.all(
         profilesData.map(async (profile) => {
-          const { data: rolesData, error: rolesError } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', profile.id);
-          
-          if (rolesError) throw rolesError;
-          
-          // On définit un email par défaut puisque nous n'avons pas accès aux emails via l'API publique
-          return {
-            id: profile.id,
-            email: 'Email non disponible', // Email par défaut
-            first_name: profile.first_name,
-            last_name: profile.last_name,
-            roles: rolesData.map(r => r.role)
-          };
+          try {
+            const { data: rolesData, error: rolesError } = await supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', profile.id);
+            
+            if (rolesError) throw rolesError;
+            
+            return {
+              id: profile.id,
+              email: null, // Email will be null as we don't have access to it
+              first_name: profile.first_name,
+              last_name: profile.last_name,
+              roles: rolesData.map(r => r.role)
+            };
+          } catch (error) {
+            console.error(`Error fetching roles for user ${profile.id}:`, error);
+            return {
+              id: profile.id,
+              email: null,
+              first_name: profile.first_name,
+              last_name: profile.last_name,
+              roles: []
+            };
+          }
         })
       );
       
       setUsers(usersWithRoles);
-    } catch (error) {
+      const filtered = filterUsers(usersWithRoles, searchTerm);
+      setFilteredUsers(filtered);
+      
+      // Complete the progress
+      clearInterval(progressInterval);
+      setLoadingProgress(100);
+      
+      // Small delay to show the completed progress before removing it
+      setTimeout(() => {
+        setLoading(false);
+        setLoadingProgress(0);
+      }, 500);
+      
+    } catch (error: any) {
       console.error('Erreur lors de la récupération des utilisateurs:', error);
+      setError("Impossible de récupérer la liste des utilisateurs.");
       toast({
         title: "Erreur",
         description: "Impossible de récupérer la liste des utilisateurs.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
 
-  // Récupérer les utilisateurs au chargement de la page
+  // Fetch users when the component loads
   useEffect(() => {
     if (!authLoading && !roleLoading && isAdmin()) {
       fetchUsers();
+    } else if (!authLoading && !roleLoading) {
+      setLoading(false);
     }
   }, [authLoading, roleLoading]);
 
-  // Fonction pour attribuer un rôle à un utilisateur
+  // Update filtered users when search term changes
+  useEffect(() => {
+    setFilteredUsers(filterUsers(users, searchTerm));
+    setCurrentPage(1); // Reset to first page when searching
+  }, [searchTerm, users]);
+
+  // Function to assign a role to a user
   const assignRole = async (userId: string, role: UserRole) => {
     try {
-      // Vérifier si l'utilisateur a déjà ce rôle
+      // Check if the user already has this role
       const user = users.find(u => u.id === userId);
       if (user && user.roles.includes(role)) {
         toast({
@@ -102,7 +182,7 @@ const AdminPage = () => {
         return;
       }
 
-      // Ajouter le rôle
+      // Add the role
       const { error } = await supabase
         .from('user_roles')
         .insert([
@@ -116,7 +196,7 @@ const AdminPage = () => {
         description: `Rôle ${role} attribué avec succès.`,
       });
 
-      // Rafraîchir la liste des utilisateurs
+      // Refresh the list of users
       fetchUsers();
     } catch (error) {
       console.error('Erreur lors de l\'attribution du rôle:', error);
@@ -128,11 +208,12 @@ const AdminPage = () => {
     }
   };
 
-  // Fonction pour retirer un rôle à un utilisateur
+  // Function to remove a role from a user
   const removeRole = async (userId: string, role: string) => {
     try {
-      // On ne peut pas retirer le rôle 'user' de base
-      if (role === 'user' && users.find(u => u.id === userId)?.roles.length === 1) {
+      // Check if this is the user's only 'user' role
+      const user = users.find(u => u.id === userId);
+      if (role === 'user' && user?.roles.length === 1) {
         toast({
           title: "Information",
           description: "Impossible de retirer le rôle 'user' de base.",
@@ -153,7 +234,7 @@ const AdminPage = () => {
         description: `Rôle ${role} retiré avec succès.`,
       });
 
-      // Rafraîchir la liste des utilisateurs
+      // Refresh the list of users
       fetchUsers();
     } catch (error) {
       console.error('Erreur lors de la suppression du rôle:', error);
@@ -165,14 +246,7 @@ const AdminPage = () => {
     }
   };
 
-  // Filtrer les utilisateurs par le terme de recherche
-  const filteredUsers = users.filter(user => 
-    (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.first_name && user.first_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.last_name && user.last_name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  // Si l'utilisateur actuel n'est pas admin, afficher un message d'erreur
+  // If the user is not an admin, show access denied message
   if (!authLoading && !roleLoading && !isAdmin()) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -199,25 +273,46 @@ const AdminPage = () => {
 
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Gestion des Rôles Utilisateurs</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                <span>Gestion des Rôles Utilisateurs</span>
+                {loading && <span className="text-sm font-normal text-muted-foreground">Chargement des données...</span>}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <UserSearch 
-                searchTerm={searchTerm} 
-                onSearchChange={setSearchTerm}
-              />
+              {loadingProgress > 0 && (
+                <div className="mb-4">
+                  <Progress value={loadingProgress} className="h-2" />
+                </div>
+              )}
 
-              {loading ? (
-                <div className="flex justify-center items-center py-10">
-                  <Loader className="h-8 w-8 animate-spin text-rally-orange" />
+              {error ? (
+                <div className="bg-destructive/10 border border-destructive/30 text-destructive rounded-md p-4 mb-4">
+                  <p className="font-semibold">Erreur</p>
+                  <p>{error}</p>
+                  <button 
+                    onClick={fetchUsers} 
+                    className="mt-2 text-sm underline hover:no-underline"
+                  >
+                    Réessayer
+                  </button>
                 </div>
               ) : (
-                <UserTable 
-                  users={filteredUsers} 
-                  onRemoveRole={removeRole}
-                  onSelectUser={setSelectedUser}
-                  loading={loading}
-                />
+                <>
+                  <UserSearch 
+                    searchTerm={searchTerm} 
+                    onSearchChange={setSearchTerm}
+                  />
+
+                  <UserTable 
+                    users={getCurrentPageUsers()} 
+                    onRemoveRole={removeRole}
+                    onSelectUser={setSelectedUser}
+                    loading={loading}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </>
               )}
             </CardContent>
           </Card>
