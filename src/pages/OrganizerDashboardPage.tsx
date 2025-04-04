@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -74,9 +73,9 @@ const OrganizerDashboardPage = () => {
               </p>
             </div>
             <Button className="mt-4 md:mt-0 bg-asag-red hover:bg-asag-red/90" asChild>
-              <Link to="/organizer/events/create">
+              <Link to="/organizer/events">
                 <CalendarPlus className="mr-2 h-4 w-4" />
-                Créer un événement
+                Gérer les événements
               </Link>
             </Button>
           </div>

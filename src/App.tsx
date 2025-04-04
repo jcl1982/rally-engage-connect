@@ -16,6 +16,7 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import OrganizerRoute from "./components/auth/OrganizerRoute";
 import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
+import EventManagementPage from "./pages/EventManagementPage";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             {/* Routes protégées pour organisateurs */}
             <Route element={<OrganizerRoute />}>
               <Route path="/organizer" element={<OrganizerDashboardPage />} />
+              <Route path="/organizer/events" element={<EventManagementPage />} />
             </Route>
             
             <Route path="/login" element={<LoginPage />} />
