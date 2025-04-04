@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +13,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define validation schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Format d'email invalide" }),
-  password: z.string().min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" }),
+  password: z.string().min(1, { message: "Veuillez entrer votre mot de passe" }),
   remember: z.boolean().optional(),
 });
 
@@ -36,25 +37,87 @@ const LoginPage = () => {
     },
   });
   
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate('/');
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
+  
   const handleLogin = async (values: LoginFormValues) => {
     try {
-      // In a real app, you would call an authentication API here
-      console.log("Login attempt with:", values.email);
+      const { email, password } = values;
       
-      // Simulate authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) {
+        throw error;
+      }
       
       toast({
         title: "Connexion réussie",
-        description: "Vous êtes maintenant connecté à votre compte RallyConnect.",
+        description: "Vous êtes maintenant connecté à votre compte ASA Guadeloupe.",
       });
       
       // Navigate to the home page after successful login
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erreur lors de la connexion:", error);
       toast({
         title: "Erreur de connexion",
-        description: "Nom d'utilisateur ou mot de passe incorrect",
+        description: "Email ou mot de passe incorrect. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error("Erreur lors de la connexion avec Google:", error);
+      toast({
+        title: "Erreur de connexion",
+        description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleFacebookLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error("Erreur lors de la connexion avec Facebook:", error);
+      toast({
+        title: "Erreur de connexion",
+        description: "Une erreur est survenue lors de la connexion avec Facebook. Veuillez réessayer.",
         variant: "destructive",
       });
     }
@@ -159,7 +222,7 @@ const LoginPage = () => {
               </div>
               
               <div className="grid grid-cols-2 gap-4 mt-6">
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleGoogleLogin}>
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0353 3.12C17.9503 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z"
@@ -180,7 +243,7 @@ const LoginPage = () => {
                   </svg>
                   Google
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleFacebookLogin}>
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 16.991 5.657 21.128 10.438 21.879V14.89H7.898V12H10.438V9.797C10.438 7.291 11.93 5.907 14.215 5.907C15.309 5.907 16.453 6.102 16.453 6.102V8.562H15.193C13.95 8.562 13.563 9.333 13.563 10.124V12H16.336L15.893 14.89H13.563V21.879C18.343 21.129 22 16.99 22 12Z"

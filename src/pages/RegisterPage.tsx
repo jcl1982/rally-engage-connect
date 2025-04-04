@@ -12,6 +12,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define validation schema with password matching
 const registerSchema = z.object({
@@ -51,23 +52,36 @@ const RegisterPage = () => {
   
   const handleRegister = async (values: RegisterFormValues) => {
     try {
-      // In a real app, you would call a registration API here
-      console.log("Registration attempt with:", values.email);
+      const { firstname, lastname, email, password } = values;
       
-      // Simulate registration delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstname,
+            last_name: lastname
+          },
+          emailRedirectTo: `${window.location.origin}/login`
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
       
       toast({
         title: "Inscription réussie",
-        description: "Votre compte a été créé avec succès. Bienvenue sur ASA Guadeloupe!",
+        description: "Votre compte a été créé. Veuillez vérifier votre email pour activer votre compte.",
       });
       
       // Navigate to login page after successful registration
       navigate("/login");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erreur lors de l'inscription:", error);
       toast({
         title: "Erreur d'inscription",
-        description: "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
+        description: error.message || "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
         variant: "destructive",
       });
     }
