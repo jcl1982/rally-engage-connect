@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -7,13 +7,30 @@ import { Shield } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import AccessDenied from "@/components/admin/AccessDenied";
 import UsersManagement from "@/components/admin/UsersManagement";
+import { toast } from "sonner";
 
 const AdminPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: roleLoading } = useUserRole();
+  const { isAdmin, loading: roleLoading, refreshRoles } = useUserRole();
+
+  // Refresh roles when component mounts to ensure latest permissions
+  useEffect(() => {
+    if (user) {
+      refreshRoles();
+    }
+  }, [user]);
+
+  // Show diagnostic information in console to help troubleshoot
+  useEffect(() => {
+    if (!authLoading && user) {
+      console.log("AdminPage: User authenticated as", user.email);
+      console.log("AdminPage: Admin status:", isAdmin());
+    }
+  }, [user, authLoading, isAdmin]);
 
   // If the user is not an admin, show access denied message
   if (!authLoading && !roleLoading && !isAdmin()) {
+    toast.error("Vous n'avez pas les droits administrateur nécessaires");
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -37,7 +54,13 @@ const AdminPage = () => {
             </h1>
           </div>
 
-          <UsersManagement />
+          {roleLoading || authLoading ? (
+            <div className="text-center py-8">
+              <p>Chargement des permissions d'administrateur...</p>
+            </div>
+          ) : (
+            <UsersManagement />
+          )}
         </div>
       </main>
       <Footer />

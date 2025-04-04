@@ -4,16 +4,22 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Loader } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const AdminRoute = () => {
   const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: roleLoading, roles } = useUserRole();
-  const { toast } = useToast();
+  const { isAdmin, loading: roleLoading, roles, refreshRoles } = useUserRole();
   const location = useLocation();
   
   const loading = authLoading || roleLoading;
 
+  // Refresh roles when component mounts
+  useEffect(() => {
+    if (user) {
+      refreshRoles();
+    }
+  }, [user]);
+  
   // Afficher plus d'informations de diagnostic
   useEffect(() => {
     if (!loading && user) {
@@ -21,7 +27,7 @@ const AdminRoute = () => {
       console.log("User roles:", roles);
       console.log("Is admin:", isAdmin());
     }
-  }, [user, loading, roles]);
+  }, [user, loading, roles, isAdmin]);
 
   if (loading) {
     return (
@@ -37,11 +43,7 @@ const AdminRoute = () => {
   }
 
   if (!isAdmin()) {
-    toast({
-      title: "Accès refusé",
-      description: "Vous n'avez pas les droits administrateur nécessaires pour accéder à cette page.",
-      variant: "destructive",
-    });
+    toast.error("Vous n'avez pas les droits administrateur nécessaires pour accéder à cette page.");
     return <Navigate to="/profile" replace />;
   }
 
