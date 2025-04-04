@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -347,7 +348,8 @@ const AdminPage = () => {
                                         <h4 className="font-medium">Ajouter un rôle:</h4>
                                         <div className="flex gap-2">
                                           <Select
-                                            onValueChange={(value: string) => {
+                                            onValueChange={(value) => {
+                                              // Make sure the value is a valid UserRole before passing it to assignRole
                                               if (isValidUserRole(value)) {
                                                 assignRole(selectedUser.id, value);
                                               }
