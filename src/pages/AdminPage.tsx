@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
@@ -7,6 +6,7 @@ import { Shield, RefreshCw } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import AccessDenied from "@/components/admin/AccessDenied";
 import UsersManagement from "@/components/admin/UsersManagement";
+import SuperUserPromotion from "@/components/admin/SuperUserPromotion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -16,7 +16,6 @@ const AdminPage = () => {
   const [hasCheckedRoles, setHasCheckedRoles] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Refresh roles when component mounts to ensure latest permissions
   useEffect(() => {
     if (user) {
       console.log("AdminPage: Refreshing roles for user", user.id);
@@ -26,7 +25,6 @@ const AdminPage = () => {
     }
   }, [user, refreshRoles]);
 
-  // Show diagnostic information in console to help troubleshoot
   useEffect(() => {
     if (!authLoading && user) {
       console.log("AdminPage: User authenticated as", user.email);
@@ -53,7 +51,6 @@ const AdminPage = () => {
     }
   };
 
-  // If there was an error loading roles, show error message with refresh button
   if (roleError) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -78,7 +75,6 @@ const AdminPage = () => {
     );
   }
 
-  // If the user is not an admin, show access denied message
   if (hasCheckedRoles && !authLoading && !roleLoading && !isAdmin()) {
     toast.error("Vous n'avez pas les droits administrateur nécessaires");
     return (
@@ -119,7 +115,10 @@ const AdminPage = () => {
               <p>Chargement des permissions d'administrateur...</p>
             </div>
           ) : (
-            <UsersManagement />
+            <>
+              <SuperUserPromotion />
+              <UsersManagement />
+            </>
           )}
         </div>
       </main>
