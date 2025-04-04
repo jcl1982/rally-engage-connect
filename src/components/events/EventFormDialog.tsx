@@ -27,9 +27,9 @@ const eventSchema = z.object({
   }),
   status: z.enum(["draft", "published", "cancelled"]),
   image_url: z.string().optional(),
-  // Nouveaux champs pour les détails de l'épreuve
-  max_participants: z.string().optional().transform(val => val === "" ? null : Number(val)),
-  entry_fee: z.string().optional().transform(val => val === "" ? null : Number(val)),
+  // Nouveaux champs pour les détails de l'épreuve - Correction du type pour max_participants et entry_fee
+  max_participants: z.string().optional().transform(val => val === "" ? null : parseInt(val, 10)),
+  entry_fee: z.string().optional().transform(val => val === "" ? null : parseFloat(val)),
   regulations_url: z.string().optional(),
   event_type: z.enum(["rally", "hillclimb", "circuit", "slalom", "other"]).optional(),
   difficulty_level: z.enum(["beginner", "intermediate", "advanced", "expert"]).optional(),
@@ -94,8 +94,8 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
         end_date: formatDateForInput(endDate),
         status: event.status,
         image_url: event.image_url || "",
-        max_participants: event.max_participants?.toString() || "",
-        entry_fee: event.entry_fee?.toString() || "",
+        max_participants: event.max_participants !== null ? event.max_participants.toString() : "",
+        entry_fee: event.entry_fee !== null ? event.entry_fee.toString() : "",
         regulations_url: event.regulations_url || "",
         event_type: event.event_type || undefined,
         difficulty_level: event.difficulty_level || undefined,
