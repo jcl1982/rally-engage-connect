@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useUserRole } from "@/hooks/useUserRole";
+import { Database } from "@/integrations/supabase/types";
 
 // Type pour les utilisateurs avec leurs rôles
 type UserWithRoles = {
@@ -36,6 +37,9 @@ type UserWithRoles = {
   last_name: string | null;
   roles: string[];
 };
+
+// Définir le type pour les rôles d'utilisateur
+type UserRole = Database["public"]["Enums"]["app_role"];
 
 const AdminPage = () => {
   const { toast } = useToast();
@@ -101,7 +105,7 @@ const AdminPage = () => {
   }, [authLoading, roleLoading]);
 
   // Fonction pour attribuer un rôle à un utilisateur
-  const assignRole = async (userId: string, role: 'user' | 'organizer' | 'admin') => {
+  const assignRole = async (userId: string, role: UserRole) => {
     try {
       // Vérifier si l'utilisateur a déjà ce rôle
       const user = users.find(u => u.id === userId);
@@ -340,7 +344,9 @@ const AdminPage = () => {
                                         <div className="flex gap-2">
                                           <Select
                                             onValueChange={(value) => {
-                                              assignRole(selectedUser.id, value as 'user' | 'organizer' | 'admin');
+                                              // Conversion explicite en UserRole pour s'assurer que la valeur est du bon type
+                                              const roleValue = value as UserRole;
+                                              assignRole(selectedUser.id, roleValue);
                                             }}
                                           >
                                             <SelectTrigger className="w-40">
