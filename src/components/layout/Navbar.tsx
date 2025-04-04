@@ -2,11 +2,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Trophy, Car, User, Menu, LogOut } from "lucide-react";
+import { Trophy, Car, User, Menu, LogOut, LayoutDashboard } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface NavItemProps {
   to: string;
@@ -36,6 +37,7 @@ const NavItem = ({ to, icon, label, isMobile = false }: NavItemProps) => {
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const { isOrganizer, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -62,6 +64,9 @@ const Navbar = () => {
           <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" />
           {user && (
             <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" />
+          )}
+          {user && !roleLoading && isOrganizer() && (
+            <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" />
           )}
         </nav>
 
@@ -102,6 +107,9 @@ const Navbar = () => {
               <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" isMobile />
               {user && (
                 <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" isMobile />
+              )}
+              {user && !roleLoading && isOrganizer() && (
+                <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" isMobile />
               )}
             </nav>
             <div className="flex flex-col gap-2 mt-8">
