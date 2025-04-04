@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -94,8 +93,8 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
         end_date: formatDateForInput(endDate),
         status: event.status,
         image_url: event.image_url || "",
-        max_participants: event.max_participants !== null ? event.max_participants.toString() : "",
-        entry_fee: event.entry_fee !== null ? event.entry_fee.toString() : "",
+        max_participants: event.max_participants !== null ? String(event.max_participants) : "",
+        entry_fee: event.entry_fee !== null ? String(event.entry_fee) : "",
         regulations_url: event.regulations_url || "",
         event_type: event.event_type || undefined,
         difficulty_level: event.difficulty_level || undefined,
