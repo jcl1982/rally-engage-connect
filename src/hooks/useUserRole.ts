@@ -30,14 +30,14 @@ export const useUserRole = () => {
       console.log(`Fetching roles for user ${user.id}`, { forceRefresh });
 
       // Direct SQL query approach to avoid RLS recursion issues
-      // Using type assertion to handle the TypeScript error
+      // Using a properly typed approach that works with the SQL function
       const { data, error } = await supabase.rpc(
-        'get_user_roles' as any, 
+        'get_user_roles',
         { user_id: user.id }
       );
 
       if (error) {
-        console.error("Erreur lors de la récupération des rôles:", error);
+        console.error("Error retrieving roles:", error);
         setError(error.message);
         // Don't show toast here to avoid overwhelming the user
       } else {
@@ -49,8 +49,8 @@ export const useUserRole = () => {
         setLastRefresh(Date.now());
       }
     } catch (err: any) {
-      console.error("Exception lors de la récupération des rôles:", err);
-      setError(err.message || "Erreur lors du chargement des rôles");
+      console.error("Exception when retrieving roles:", err);
+      setError(err.message || "Error loading roles");
     } finally {
       setLoading(false);
     }
