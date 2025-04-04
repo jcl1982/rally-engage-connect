@@ -26,7 +26,7 @@ const eventSchema = z.object({
   }),
   status: z.enum(["draft", "published", "cancelled"]),
   image_url: z.string().optional(),
-  // Nouveaux champs pour les détails de l'épreuve - Correction du type pour max_participants et entry_fee
+  // Nouveaux champs pour les détails de l'épreuve - Les types sont définis comme string pour l'interface utilisateur
   max_participants: z.string().optional().transform(val => val === "" ? null : parseInt(val, 10)),
   entry_fee: z.string().optional().transform(val => val === "" ? null : parseFloat(val)),
   regulations_url: z.string().optional(),
@@ -37,7 +37,24 @@ const eventSchema = z.object({
   contact_phone: z.string().optional(),
 });
 
-type EventFormValues = z.infer<typeof eventSchema>;
+// Type pour les valeurs du formulaire (avant transformation)
+type EventFormValues = {
+  title: string;
+  description?: string;
+  location: string;
+  start_date: string;
+  end_date: string;
+  status: "draft" | "published" | "cancelled";
+  image_url?: string;
+  max_participants?: string;  // String for form input
+  entry_fee?: string;        // String for form input
+  regulations_url?: string;
+  event_type?: "rally" | "hillclimb" | "circuit" | "slalom" | "other";
+  difficulty_level?: "beginner" | "intermediate" | "advanced" | "expert";
+  total_distance?: string;
+  contact_email?: string;
+  contact_phone?: string;
+};
 
 interface EventFormDialogProps {
   open: boolean;
@@ -130,6 +147,7 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
     setError(null);
 
     try {
+      // Let the schema transformations handle converting strings to numbers
       const eventData = {
         title: data.title,
         description: data.description || null,
@@ -138,8 +156,9 @@ const EventFormDialog = ({ open, onOpenChange, event, onEventSaved }: EventFormD
         end_date: new Date(data.end_date).toISOString(),
         status: data.status,
         image_url: data.image_url || null,
-        max_participants: data.max_participants,
-        entry_fee: data.entry_fee,
+        // These will be transformed by the schema
+        max_participants: data.max_participants === "" ? null : parseInt(data.max_participants || "0", 10),
+        entry_fee: data.entry_fee === "" ? null : parseFloat(data.entry_fee || "0"),
         regulations_url: data.regulations_url || null,
         event_type: data.event_type || null,
         difficulty_level: data.difficulty_level || null,
