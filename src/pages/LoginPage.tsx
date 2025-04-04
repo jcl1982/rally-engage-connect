@@ -1,6 +1,5 @@
-
 import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 
-// Define validation schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Format d'email invalide" }),
   password: z.string().min(1, { message: "Veuillez entrer votre mot de passe" }),
@@ -29,7 +27,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Extraire le paramètre redirect de l'URL si présent
   const queryParams = new URLSearchParams(location.search);
   const redirectPath = queryParams.get('redirect') || '/';
   
@@ -42,7 +39,6 @@ const LoginPage = () => {
     },
   });
   
-  // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -72,7 +68,6 @@ const LoginPage = () => {
         description: "Vous êtes maintenant connecté à votre compte ASA Guadeloupe.",
       });
       
-      // Navigate to the redirect path after successful login
       navigate(redirectPath);
     } catch (error: any) {
       console.error("Erreur lors de la connexion:", error);
