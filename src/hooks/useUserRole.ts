@@ -13,9 +13,10 @@ export const useUserRole = () => {
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastRefresh, setLastRefresh] = useState<number>(0);
 
   // Function to fetch user roles
-  const fetchUserRoles = useCallback(async () => {
+  const fetchUserRoles = useCallback(async (forceRefresh = false) => {
     if (!user) {
       setRoles([]);
       setLoading(false);
@@ -25,12 +26,15 @@ export const useUserRole = () => {
     try {
       setLoading(true);
       
-      // Use subscriptions.value = true to force a fresh fetch from the database
+      console.log(`Fetching roles for user ${user.id}`, { forceRefresh });
+
+      // Use the { head: true } option to force Supabase to bypass cache
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq("user_id", user.id)
-        .order('role');
+        .order('role')
+        .throwOnError();
 
       if (error) throw error;
       
@@ -38,6 +42,7 @@ export const useUserRole = () => {
       const userRoles = data?.map((r) => r.role as UserRole) || [];
       console.log("User roles fetched for", user.id, ":", userRoles);
       setRoles(userRoles);
+      setLastRefresh(Date.now());
     } catch (err: any) {
       console.error("Erreur lors de la récupération des rôles:", err);
       setError(err.message || "Erreur lors du chargement des rôles");
@@ -49,28 +54,37 @@ export const useUserRole = () => {
 
   // Fetch roles when user changes
   useEffect(() => {
-    fetchUserRoles();
+    if (user) {
+      fetchUserRoles(true);
+    } else {
+      setRoles([]);
+      setLoading(false);
+    }
   }, [user, fetchUserRoles]);
 
   // Check if user has a specific role
-  const hasRole = (role: UserRole): boolean => {
+  const hasRole = useCallback((role: UserRole): boolean => {
+    console.log(`Checking if user has role: ${role}`, roles);
     return roles.includes(role);
-  };
+  }, [roles]);
 
   // Check if user is an organizer or admin
-  const isOrganizer = (): boolean => {
+  const isOrganizer = useCallback((): boolean => {
+    console.log("Checking if user is organizer or admin", roles);
     return hasRole('organizer' as UserRole) || hasRole('admin' as UserRole);
-  };
+  }, [hasRole, roles]);
 
   // Check if user is an admin
-  const isAdmin = (): boolean => {
+  const isAdmin = useCallback((): boolean => {
+    console.log("Checking if user is admin", roles);
     return hasRole('admin' as UserRole);
-  };
+  }, [hasRole, roles]);
 
   // Function to manually refresh roles
-  const refreshRoles = () => {
-    fetchUserRoles();
-  };
+  const refreshRoles = useCallback(() => {
+    console.log("Manually refreshing roles");
+    return fetchUserRoles(true);
+  }, [fetchUserRoles]);
 
   return {
     roles,
@@ -79,6 +93,7 @@ export const useUserRole = () => {
     hasRole,
     isOrganizer,
     isAdmin,
-    refreshRoles
+    refreshRoles,
+    lastRefresh
   };
 };

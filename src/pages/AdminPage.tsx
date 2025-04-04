@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -11,25 +11,30 @@ import { toast } from "sonner";
 
 const AdminPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: roleLoading, refreshRoles } = useUserRole();
+  const { isAdmin, loading: roleLoading, refreshRoles, roles } = useUserRole();
+  const [hasCheckedRoles, setHasCheckedRoles] = useState(false);
 
   // Refresh roles when component mounts to ensure latest permissions
   useEffect(() => {
     if (user) {
-      refreshRoles();
+      console.log("AdminPage: Refreshing roles for user", user.id);
+      refreshRoles().then(() => {
+        setHasCheckedRoles(true);
+      });
     }
-  }, [user]);
+  }, [user, refreshRoles]);
 
   // Show diagnostic information in console to help troubleshoot
   useEffect(() => {
     if (!authLoading && user) {
       console.log("AdminPage: User authenticated as", user.email);
       console.log("AdminPage: Admin status:", isAdmin());
+      console.log("AdminPage: User roles:", roles);
     }
-  }, [user, authLoading, isAdmin]);
+  }, [user, authLoading, isAdmin, roles]);
 
   // If the user is not an admin, show access denied message
-  if (!authLoading && !roleLoading && !isAdmin()) {
+  if (hasCheckedRoles && !authLoading && !roleLoading && !isAdmin()) {
     toast.error("Vous n'avez pas les droits administrateur nécessaires");
     return (
       <div className="min-h-screen flex flex-col">
