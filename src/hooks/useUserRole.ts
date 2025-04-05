@@ -23,15 +23,18 @@ export const useUserRole = () => {
 
       try {
         console.log("Fetching roles for user:", user.id);
+        console.log("User email:", user.email);
+        
+        // Modification de la requête pour récupérer le rôle correctement
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role_user')
+          .select('role')
           .eq("user_id", user.id);
 
         if (error) throw error;
         
         // Transform data to array of roles
-        const userRoles = data?.map((r) => r.role_user as UserRole) || [];
+        const userRoles = data?.map((r) => r.role as UserRole) || [];
         console.log("Fetched user roles:", userRoles);
         setRoles(userRoles);
       } catch (err: any) {
