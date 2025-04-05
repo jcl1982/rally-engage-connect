@@ -24,16 +24,16 @@ export const useUserRole = () => {
       try {
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role')
+          .select('role_user') // Changed from 'role' to 'role_user' to match the database column
           .eq("user_id", user.id);
 
         if (error) throw error;
         
         // Transformer les données en tableau de rôles
-        setRoles(data?.map((r) => r.role as UserRole) || []);
+        setRoles(data?.map((r) => r.role_user as UserRole) || []);
         
         // Logging des rôles pour le débogage
-        console.log("Rôles de l'utilisateur:", data?.map((r) => r.role) || []);
+        console.log("Rôles de l'utilisateur:", data?.map((r) => r.role_user) || []);
       } catch (err: any) {
         console.error("Erreur lors de la récupération des rôles:", err);
         setError(err.message || "Erreur lors du chargement des rôles");
