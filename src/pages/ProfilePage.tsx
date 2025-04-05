@@ -13,6 +13,7 @@ import { upcomingEvents } from "@/data/eventsData";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner"; // Import toast from sonner for more consistent notifications
 
 interface ProfileData {
   id: string;
@@ -24,14 +25,10 @@ interface ProfileData {
 
 const ProfileHeader = ({ profileData }: { profileData: ProfileData | null }) => {
   const { signOut } = useAuth();
-  const { toast } = useToast();
   
   const handleSignOut = async () => {
     await signOut();
-    toast({
-      title: "Déconnexion réussie",
-      description: "Vous avez été déconnecté avec succès.",
-    });
+    toast.success("Déconnexion réussie");
   };
   
   return (
@@ -93,16 +90,18 @@ const StatsCard = ({ icon, value, label }) => {
 };
 
 const ProfilePage = () => {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
       
       try {
+        console.log("Fetching profile data for user:", user.id);
+        setIsLoading(true);
+        
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -111,34 +110,57 @@ const ProfilePage = () => {
         
         if (error) {
           console.error('Erreur lors de la récupération du profil:', error);
-          toast({
-            title: "Erreur",
-            description: "Impossible de charger les données de profil",
-            variant: "destructive"
-          });
+          toast.error("Impossible de charger les données de profil");
+          
+          // Try to create a profile if it doesn't exist (this might happen if the profile wasn't created during signup)
+          if (error.code === 'PGRST116') { // No rows returned by the query
+            console.log("Profile not found, attempting to create one");
+            const { user: authUser } = await supabase.auth.getUser();
+            
+            if (authUser.user) {
+              const { error: insertError } = await supabase
+                .from('profiles')
+                .insert([{ 
+                  id: user.id,
+                  first_name: authUser.user.user_metadata?.first_name || '',
+                  last_name: authUser.user.user_metadata?.last_name || ''
+                }]);
+                
+              if (insertError) {
+                console.error('Error creating profile:', insertError);
+              } else {
+                // Re-fetch the profile after creating it
+                const { data: newData } = await supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('id', user.id)
+                  .single();
+                  
+                setProfileData(newData);
+                console.log("Created and fetched new profile:", newData);
+              }
+            }
+          }
         } else {
+          console.log("Profile data fetched successfully:", data);
           setProfileData(data);
         }
       } catch (err) {
         console.error('Exception lors de la récupération du profil:', err);
-        toast({
-          title: "Erreur",
-          description: "Une erreur s'est produite lors du chargement du profil",
-          variant: "destructive"
-        });
+        toast.error("Une erreur s'est produite lors du chargement du profil");
       } finally {
         setIsLoading(false);
       }
     };
     
-    if (user && !loading) {
+    if (user && !authLoading) {
       fetchProfileData();
-    } else if (!loading) {
+    } else if (!authLoading) {
       setIsLoading(false);
     }
-  }, [user, loading]);
+  }, [user, authLoading]);
 
-  if (loading || isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
