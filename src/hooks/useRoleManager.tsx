@@ -8,11 +8,7 @@ import { UserWithRoles } from "@/types/admin";
 // Define the type for user roles
 type UserRole = Database["public"]["Enums"]["app_role"];
 
-interface RoleManagerProps {
-  fetchUsers: () => Promise<void>;
-}
-
-export const RoleManager: React.FC<RoleManagerProps> = ({ fetchUsers }) => {
+export function useRoleManager(fetchUsers: () => Promise<void>) {
   const { toast } = useToast();
 
   // Function to assign a role to a user
@@ -113,6 +109,4 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ fetchUsers }) => {
     assignRole,
     removeRole
   };
-};
-
-export default RoleManager;
+}

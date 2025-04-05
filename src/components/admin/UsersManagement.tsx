@@ -8,7 +8,7 @@ import { useAdminUsers } from "@/hooks/useAdminUsers";
 import UserTable from "@/components/admin/UserTable";
 import UserRoleDialog from "@/components/admin/UserRoleDialog";
 import UserSearch from "@/components/admin/UserSearch";
-import { RoleManager } from "@/components/admin/RoleManager";
+import { useRoleManager } from "@/hooks/useRoleManager";
 import { Database } from "@/integrations/supabase/types";
 
 // Define the type for user roles
@@ -31,7 +31,7 @@ export const UsersManagement: React.FC = () => {
   } = useAdminUsers();
 
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
-  const { assignRole, removeRole } = RoleManager({ fetchUsers });
+  const { assignRole, removeRole } = useRoleManager(fetchUsers);
 
   // Calculate pagination values
   const totalUsers = filteredUsers.length;
