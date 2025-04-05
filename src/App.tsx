@@ -13,6 +13,9 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/auth/PrivateRoute";
+import OrganizerRoute from "./components/auth/OrganizerRoute";
+import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -29,7 +32,17 @@ const App = () => (
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:id" element={<EventDetailsPage />} />
             <Route path="/events/:id/register" element={<RegistrationPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            
+            {/* Routes protégées pour utilisateurs connectés */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+            
+            {/* Routes protégées pour organisateurs */}
+            <Route element={<OrganizerRoute />}>
+              <Route path="/organizer" element={<OrganizerDashboardPage />} />
+            </Route>
+            
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="*" element={<NotFound />} />

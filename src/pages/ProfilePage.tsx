@@ -1,17 +1,39 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { User, Car, Calendar, Trophy, Settings, LogOut, Star, Map, Bell, FileText } from "lucide-react";
+import { User, Car, Calendar, Trophy, Settings, LogOut, Star, Map, Bell, FileText, Loader } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import EventCard from "@/components/events/EventCard";
 import { upcomingEvents } from "@/data/eventsData";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
-const ProfileHeader = () => {
+interface ProfileData {
+  id: string;
+  first_name: string;
+  last_name: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+const ProfileHeader = ({ profileData }: { profileData: ProfileData | null }) => {
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+  
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vous avez été déconnecté avec succès.",
+    });
+  };
+  
   return (
     <div className="bg-gradient-to-b from-rally-orange to-rally-orange/80 text-white py-8 rounded-lg mb-8">
       <div className="container">
@@ -21,8 +43,12 @@ const ProfileHeader = () => {
           </div>
           
           <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold">Jean Dupont</h1>
-            <p className="opacity-90">Pilote amateur • Membre depuis 2022</p>
+            <h1 className="text-2xl font-bold">
+              {profileData ? `${profileData.first_name} ${profileData.last_name}` : 'Chargement...'}
+            </h1>
+            <p className="opacity-90">
+              {profileData ? `Membre depuis ${new Date(profileData.created_at || '').getFullYear()}` : 'Chargement...'}
+            </p>
             <div className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
               <Badge className="bg-white/20 hover:bg-white/30">Passionné</Badge>
               <Badge className="bg-white/20 hover:bg-white/30">5 rallyes</Badge>
@@ -37,7 +63,11 @@ const ProfileHeader = () => {
               <Settings className="w-4 h-4 mr-2" />
               Paramètres
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/20">
+            <Button 
+              variant="outline" 
+              className="border-white text-white hover:bg-white/20"
+              onClick={handleSignOut}
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Déconnexion
             </Button>
@@ -63,12 +93,72 @@ const StatsCard = ({ icon, value, label }) => {
 };
 
 const ProfilePage = () => {
+  const { user, loading } = useAuth();
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error('Erreur lors de la récupération du profil:', error);
+          toast({
+            title: "Erreur",
+            description: "Impossible de charger les données de profil",
+            variant: "destructive"
+          });
+        } else {
+          setProfileData(data);
+        }
+      } catch (err) {
+        console.error('Exception lors de la récupération du profil:', err);
+        toast({
+          title: "Erreur",
+          description: "Une erreur s'est produite lors du chargement du profil",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    if (user && !loading) {
+      fetchProfileData();
+    } else if (!loading) {
+      setIsLoading(false);
+    }
+  }, [user, loading]);
+
+  if (loading || isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow py-8 flex items-center justify-center">
+          <div className="text-center">
+            <Loader className="w-12 h-12 animate-spin text-rally-orange mx-auto mb-4" />
+            <p className="text-lg">Chargement de votre profil...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow py-8">
         <div className="container">
-          <ProfileHeader />
+          <ProfileHeader profileData={profileData} />
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <StatsCard 
