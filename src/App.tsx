@@ -16,9 +16,6 @@ import NewPasswordPage from "./pages/NewPasswordPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/auth/PrivateRoute";
-import OrganizerRoute from "./components/auth/OrganizerRoute";
-import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
-import EventManagementPage from "./pages/EventManagementPage";
 import AuthWrapper from "./components/auth/AuthWrapper";
 
 // Create a client
@@ -68,12 +65,6 @@ const App = () => (
             {/* Routes protégées pour utilisateurs connectés */}
             <Route element={<PrivateRoute />}>
               <Route path="/profile" element={<ProfilePage />} />
-            </Route>
-            
-            {/* Routes protégées pour organisateurs */}
-            <Route element={<OrganizerRoute />}>
-              <Route path="/organizer" element={<OrganizerDashboardPage />} />
-              <Route path="/organizer/events" element={<EventManagementPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

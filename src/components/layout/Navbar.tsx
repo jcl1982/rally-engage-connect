@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+
+import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Trophy, Car, User, Menu, LogOut, LayoutDashboard } from "lucide-react";
+import { Trophy, Car, User, Menu, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
-import { useUserRole } from "@/hooks/useUserRole";
 
 interface NavItemProps {
   to: string;
@@ -36,19 +36,7 @@ const NavItem = ({ to, icon, label, isMobile = false }: NavItemProps) => {
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
-  const { roles, isOrganizer, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (user) {
-      console.log("Navbar - User:", user);
-      console.log("Navbar - User ID:", user.id);
-      console.log("Navbar - User Email:", user.email);
-      console.log("Navbar - Roles Loading:", roleLoading);
-      console.log("Navbar - Roles:", roles);
-      console.log("Navbar - isOrganizer function result:", isOrganizer());
-    }
-  }, [user, roles, isOrganizer, roleLoading]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -57,17 +45,6 @@ const Navbar = () => {
       description: "Vous avez été déconnecté avec succès.",
     });
   };
-
-  const showOrganizerLink = user && !roleLoading && isOrganizer();
-  
-  useEffect(() => {
-    if (user) {
-      console.log("Should show organizer link:", showOrganizerLink, 
-        "User:", !!user, 
-        "Role loading:", roleLoading, 
-        "Is organizer:", isOrganizer());
-    }
-  }, [user, showOrganizerLink, roleLoading, isOrganizer]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -84,9 +61,6 @@ const Navbar = () => {
           <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" />
           {user && (
             <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" />
-          )}
-          {showOrganizerLink && (
-            <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" />
           )}
         </nav>
 
@@ -125,9 +99,6 @@ const Navbar = () => {
               <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" isMobile />
               {user && (
                 <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" isMobile />
-              )}
-              {showOrganizerLink && (
-                <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" isMobile />
               )}
             </nav>
             <div className="flex flex-col gap-2 mt-8">
