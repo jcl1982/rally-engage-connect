@@ -55,6 +55,62 @@ const DateLocationFields: React.FC<DateLocationFieldsProps> = ({ control }) => {
           </FormItem>
         )}
       />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField
+          control={control}
+          name="total_distance"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Distance totale</FormLabel>
+              <FormControl>
+                <Input placeholder="250 km" {...field} value={field.value || ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={control}
+          name="entry_fee"
+          render={({ field: { onChange, ...field }}) => (
+            <FormItem>
+              <FormLabel>Frais d'inscription</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  placeholder="150" 
+                  {...field} 
+                  value={field.value === undefined ? "" : field.value}
+                  onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+      
+      <FormField
+        control={control}
+        name="max_participants"
+        render={({ field: { onChange, ...field }}) => (
+          <FormItem>
+            <FormLabel>Nombre maximum de participants</FormLabel>
+            <FormControl>
+              <Input 
+                type="number" 
+                placeholder="100" 
+                {...field}
+                value={field.value === undefined ? "" : field.value}
+                onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </>
   );
 };

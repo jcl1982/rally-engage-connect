@@ -11,19 +11,29 @@ export const submitEventForm = async (
   if (!user) return { success: false, error: "Utilisateur non connecté" };
   
   try {
+    const eventData = {
+      title: data.title,
+      description: data.description || null,
+      location: data.location,
+      start_date: new Date(data.start_date).toISOString(),
+      end_date: new Date(data.end_date).toISOString(),
+      status: data.status,
+      image_url: data.image_url || null,
+      difficulty_level: data.difficulty_level || null,
+      event_type: data.event_type || null,
+      total_distance: data.total_distance || null,
+      entry_fee: data.entry_fee || null,
+      max_participants: data.max_participants || null,
+      contact_email: data.contact_email || null,
+      contact_phone: data.contact_phone || null,
+      regulations_url: data.regulations_url || null,
+    };
+
     if (eventId) {
       // Mise à jour d'un événement existant
       const { error } = await supabase
         .from("events")
-        .update({
-          title: data.title,
-          description: data.description || null,
-          location: data.location,
-          start_date: new Date(data.start_date).toISOString(),
-          end_date: new Date(data.end_date).toISOString(),
-          status: data.status,
-          image_url: data.image_url || null,
-        })
+        .update(eventData)
         .eq("id", eventId);
 
       if (error) throw error;
@@ -32,13 +42,7 @@ export const submitEventForm = async (
       const { error } = await supabase
         .from("events")
         .insert({
-          title: data.title,
-          description: data.description || null,
-          location: data.location,
-          start_date: new Date(data.start_date).toISOString(),
-          end_date: new Date(data.end_date).toISOString(),
-          status: data.status,
-          image_url: data.image_url || null,
+          ...eventData,
           organizer_id: user.id,
         });
 

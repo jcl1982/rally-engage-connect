@@ -38,12 +38,43 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({ control }) => {
                 placeholder="Description détaillée de l'événement..." 
                 className="min-h-[100px]" 
                 {...field} 
+                value={field.value || ""}
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField
+          control={control}
+          name="event_type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type d'événement</FormLabel>
+              <FormControl>
+                <Input placeholder="Rallye routier" {...field} value={field.value || ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="difficulty_level"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Niveau de difficulté</FormLabel>
+              <FormControl>
+                <Input placeholder="Intermédiaire" {...field} value={field.value || ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
     </>
   );
 };
