@@ -1,38 +1,30 @@
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Flag, Calendar, Users, Trophy, LayoutDashboard } from "lucide-react";
+import { Trophy, Clock, MapPin, Flag, Calendar, Users } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import EventCard from "@/components/events/EventCard";
 import { upcomingEvents } from "@/data/eventsData";
-import { useAuth } from "@/context/AuthContext";
-import { useUserRole } from "@/hooks/useUserRole";
 
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden">
       <div 
-        className="absolute inset-0 z-0 bg-cover bg-center opacity-30" 
+        className="absolute inset-0 z-0 bg-cover bg-center opacity-20" 
         style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1611566026373-c6c8da0ea861?q=80&w=2070&auto=format&fit=crop')",
-          backgroundPosition: "center center" 
+          backgroundImage: "url('https://images.unsplash.com/photo-1631194758628-71ec7c35137e?q=80&w=2070&auto=format&fit=crop')",
+          backgroundPosition: "center 30%" 
         }}
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-background" />
       
       <div className="container relative z-20 pt-20 pb-24 md:pt-32 md:pb-40">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="flex justify-center mb-6">
-            <img 
-              src="/lovable-uploads/27367e6e-c746-4f09-b941-9fe5dcaa7b35.png" 
-              alt="ASA Guadeloupe Logo" 
-              className="h-32 w-32 animate-fade-in"
-            />
-          </div>
           <Badge 
             className="mb-6 gradient-orange-blue animate-fade-in"
             variant="outline"
@@ -123,52 +115,6 @@ const FeaturesSection = () => {
   );
 };
 
-const OrganizerSection = () => {
-  return (
-    <section className="py-10 bg-rally-orange/10">
-      <div className="container">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="md:max-w-2xl">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Espace Organisateur</h2>
-            <p className="text-muted-foreground mb-6">
-              En tant qu'organisateur, vous avez accès à un espace dédié pour gérer vos événements, 
-              suivre les inscriptions et configurer les détails de vos rallyes.
-            </p>
-            <div className="space-y-4 mb-6 md:mb-0">
-              <div className="flex items-start space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-rally-orange" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Gestion d'événements</h3>
-                  <p className="text-sm text-muted-foreground">Créez et gérez facilement vos rallyes</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-rally-orange" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Suivi des participants</h3>
-                  <p className="text-sm text-muted-foreground">Gérez les inscriptions et les participants</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 md:mt-0">
-            <Button asChild size="lg" className="bg-asag-red hover:bg-asag-red/90">
-              <Link to="/organizer">
-                <LayoutDashboard className="mr-2 h-5 w-5" />
-                Accéder à mon espace
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 const UpcomingEventsSection = () => {
   return (
     <section className="py-20">
@@ -219,24 +165,11 @@ const CallToActionSection = () => {
 };
 
 const Index = () => {
-  const { user } = useAuth();
-  const { isOrganizer, loading: roleLoading } = useUserRole();
-  const [showOrganizerSection, setShowOrganizerSection] = useState(false);
-
-  useEffect(() => {
-    if (user && !roleLoading && isOrganizer()) {
-      setShowOrganizerSection(true);
-    } else {
-      setShowOrganizerSection(false);
-    }
-  }, [user, roleLoading, isOrganizer]);
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <HeroSection />
-        {showOrganizerSection && <OrganizerSection />}
         <FeaturesSection />
         <UpcomingEventsSection />
         <CallToActionSection />

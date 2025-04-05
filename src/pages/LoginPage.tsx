@@ -1,6 +1,6 @@
 
 import React, { useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
+// Define validation schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Format d'email invalide" }),
   password: z.string().min(1, { message: "Veuillez entrer votre mot de passe" }),
@@ -27,10 +27,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  const queryParams = new URLSearchParams(location.search);
-  const redirectPath = queryParams.get('redirect') || '/';
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -41,43 +37,43 @@ const LoginPage = () => {
     },
   });
   
+  // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        navigate(redirectPath);
+        navigate('/');
       }
     };
     
     checkSession();
-  }, [navigate, redirectPath]);
+  }, [navigate]);
   
   const handleLogin = async (values: LoginFormValues) => {
     try {
-      console.log("Attempting login with email:", values.email);
+      const { email, password } = values;
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
       
       if (error) {
         throw error;
       }
       
-      console.log("Login successful, session:", data.session?.user?.id);
-      
       toast({
         title: "Connexion réussie",
         description: "Vous êtes maintenant connecté à votre compte ASA Guadeloupe.",
       });
       
-      navigate(redirectPath);
+      // Navigate to the home page after successful login
+      navigate("/");
     } catch (error: any) {
       console.error("Erreur lors de la connexion:", error);
       toast({
         title: "Erreur de connexion",
-        description: error.message || "Email ou mot de passe incorrect. Veuillez réessayer.",
+        description: "Email ou mot de passe incorrect. Veuillez réessayer.",
         variant: "destructive",
       });
     }

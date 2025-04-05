@@ -9,72 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      events: {
-        Row: {
-          contact_email: string | null
-          contact_phone: string | null
-          created_at: string
-          description: string | null
-          difficulty_level: string | null
-          end_date: string
-          entry_fee: number | null
-          event_type: string | null
-          id: string
-          image_url: string | null
-          location: string
-          max_participants: number | null
-          organizer_id: string
-          regulations_url: string | null
-          start_date: string
-          status: string
-          title: string
-          total_distance: string | null
-          updated_at: string
-        }
-        Insert: {
-          contact_email?: string | null
-          contact_phone?: string | null
-          created_at?: string
-          description?: string | null
-          difficulty_level?: string | null
-          end_date: string
-          entry_fee?: number | null
-          event_type?: string | null
-          id?: string
-          image_url?: string | null
-          location: string
-          max_participants?: number | null
-          organizer_id: string
-          regulations_url?: string | null
-          start_date: string
-          status?: string
-          title: string
-          total_distance?: string | null
-          updated_at?: string
-        }
-        Update: {
-          contact_email?: string | null
-          contact_phone?: string | null
-          created_at?: string
-          description?: string | null
-          difficulty_level?: string | null
-          end_date?: string
-          entry_fee?: number | null
-          event_type?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string
-          max_participants?: number | null
-          organizer_id?: string
-          regulations_url?: string | null
-          start_date?: string
-          status?: string
-          title?: string
-          total_distance?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string | null
@@ -99,48 +33,15 @@ export type Database = {
         }
         Relationships: []
       }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role_user: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role_user?: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role_user?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      get_user_roles: {
-        Args: {
-          user_id: string
-        }
-        Returns: Database["public"]["Enums"]["app_role"][]
-      }
-      has_role: {
-        Args: {
-          _user_id: string
-          _role: Database["public"]["Enums"]["app_role"]
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "user" | "organizer" | "admin"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never

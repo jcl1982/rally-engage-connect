@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 type AuthContextType = {
   session: Session | null;
@@ -21,73 +20,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Récupération et gestion de la session utilisateur
   useEffect(() => {
-    const initAuth = async () => {
-      setLoading(true);
-      
-      try {
-        // Définir d'abord le listener pour les changements d'état d'authentification
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (_event, session) => {
-            console.log("Auth state changed:", _event, session?.user?.id);
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-          }
-        );
-
-        // Ensuite vérifier si une session existe déjà
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("Error getting session:", error);
-          throw error;
-        }
-        
-        console.log("Initial auth session:", data?.session?.user?.id);
-        setSession(data.session);
-        setUser(data.session?.user ?? null);
+    // Définir d'abord le listener pour les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
         setLoading(false);
-        
-        return () => subscription.unsubscribe();
-      } catch (error) {
-        console.error("Failed to initialize auth:", error);
-        setLoading(false);
-        return () => {};
       }
-    };
-    
-    const cleanup = initAuth();
-    return () => {
-      cleanup.then(unsubscribe => unsubscribe());
-    };
+    );
+
+    // Ensuite vérifier si une session existe déjà
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Déconnexion
   const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      setSession(null);
-      setUser(null);
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast("Erreur lors de la déconnexion. Veuillez réessayer.");
-    }
+    await supabase.auth.signOut();
+    setSession(null);
+    setUser(null);
   };
 
   // Rafraîchir la session
   const refreshSession = async () => {
-    try {
-      const { data, error } = await supabase.auth.refreshSession();
-      if (error) throw error;
-      
-      if (data.session) {
-        console.log("Session refreshed for user:", data.session.user.id);
-        setSession(data.session);
-        setUser(data.session.user);
-      }
-    } catch (error: any) {
+    const { data, error } = await supabase.auth.refreshSession();
+    if (data.session) {
+      setSession(data.session);
+      setUser(data.session.user);
+    } else if (error) {
       console.error("Erreur lors du rafraîchissement de la session:", error);
-      toast("Erreur lors du rafraîchissement de la session. Veuillez vous reconnecter.");
     }
   };
 

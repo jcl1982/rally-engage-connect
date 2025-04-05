@@ -1,36 +1,17 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { User, Car, Calendar, Trophy, Settings, LogOut, Star, Map, Bell, FileText, Loader } from "lucide-react";
+import { User, Car, Calendar, Trophy, Settings, LogOut, Star, Map, Bell, FileText } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import EventCard from "@/components/events/EventCard";
 import { upcomingEvents } from "@/data/eventsData";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { toast } from "sonner"; // Import toast from sonner for more consistent notifications
 
-interface ProfileData {
-  id: string;
-  first_name: string;
-  last_name: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-const ProfileHeader = ({ profileData }: { profileData: ProfileData | null }) => {
-  const { signOut } = useAuth();
-  
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Déconnexion réussie");
-  };
-  
+const ProfileHeader = () => {
   return (
     <div className="bg-gradient-to-b from-rally-orange to-rally-orange/80 text-white py-8 rounded-lg mb-8">
       <div className="container">
@@ -40,12 +21,8 @@ const ProfileHeader = ({ profileData }: { profileData: ProfileData | null }) => 
           </div>
           
           <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold">
-              {profileData ? `${profileData.first_name} ${profileData.last_name}` : 'Chargement...'}
-            </h1>
-            <p className="opacity-90">
-              {profileData ? `Membre depuis ${new Date(profileData.created_at || '').getFullYear()}` : 'Chargement...'}
-            </p>
+            <h1 className="text-2xl font-bold">Jean Dupont</h1>
+            <p className="opacity-90">Pilote amateur • Membre depuis 2022</p>
             <div className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
               <Badge className="bg-white/20 hover:bg-white/30">Passionné</Badge>
               <Badge className="bg-white/20 hover:bg-white/30">5 rallyes</Badge>
@@ -60,11 +37,7 @@ const ProfileHeader = ({ profileData }: { profileData: ProfileData | null }) => 
               <Settings className="w-4 h-4 mr-2" />
               Paramètres
             </Button>
-            <Button 
-              variant="outline" 
-              className="border-white text-white hover:bg-white/20"
-              onClick={handleSignOut}
-            >
+            <Button variant="outline" className="border-white text-white hover:bg-white/20">
               <LogOut className="w-4 h-4 mr-2" />
               Déconnexion
             </Button>
@@ -90,97 +63,12 @@ const StatsCard = ({ icon, value, label }) => {
 };
 
 const ProfilePage = () => {
-  const { user, loading: authLoading } = useAuth();
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!user) return;
-      
-      try {
-        console.log("Fetching profile data for user:", user.id);
-        setIsLoading(true);
-        
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        
-        if (error) {
-          console.error('Erreur lors de la récupération du profil:', error);
-          toast.error("Impossible de charger les données de profil");
-          
-          // Try to create a profile if it doesn't exist (this might happen if the profile wasn't created during signup)
-          if (error.code === 'PGRST116') { // No rows returned by the query
-            console.log("Profile not found, attempting to create one");
-            const { data: userData } = await supabase.auth.getUser();
-            
-            if (userData && userData.user) {
-              const { error: insertError } = await supabase
-                .from('profiles')
-                .insert([{ 
-                  id: user.id,
-                  first_name: userData.user.user_metadata?.first_name || '',
-                  last_name: userData.user.user_metadata?.last_name || ''
-                }]);
-                
-              if (insertError) {
-                console.error('Error creating profile:', insertError);
-              } else {
-                // Re-fetch the profile after creating it
-                const { data: newData } = await supabase
-                  .from('profiles')
-                  .select('*')
-                  .eq('id', user.id)
-                  .single();
-                  
-                setProfileData(newData);
-                console.log("Created and fetched new profile:", newData);
-              }
-            }
-          }
-        } else {
-          console.log("Profile data fetched successfully:", data);
-          setProfileData(data);
-        }
-      } catch (err) {
-        console.error('Exception lors de la récupération du profil:', err);
-        toast.error("Une erreur s'est produite lors du chargement du profil");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    if (user && !authLoading) {
-      fetchProfileData();
-    } else if (!authLoading) {
-      setIsLoading(false);
-    }
-  }, [user, authLoading]);
-
-  if (authLoading || isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow py-8 flex items-center justify-center">
-          <div className="text-center">
-            <Loader className="w-12 h-12 animate-spin text-rally-orange mx-auto mb-4" />
-            <p className="text-lg">Chargement de votre profil...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow py-8">
         <div className="container">
-          <ProfileHeader profileData={profileData} />
+          <ProfileHeader />
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <StatsCard 

@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { Trophy } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -9,11 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img 
-                src="/lovable-uploads/27367e6e-c746-4f09-b941-9fe5dcaa7b35.png" 
-                alt="ASA Guadeloupe Logo" 
-                className="h-8 w-8" 
-              />
+              <Trophy className="w-6 h-6 text-asag-red" />
               <span className="font-bold text-xl">ASA Guadeloupe</span>
             </Link>
             <p className="text-gray-300 max-w-md">
@@ -35,6 +32,7 @@ const Footer = () => {
                   Événements
                 </Link>
               </li>
+              {/* Removed the /routes link that doesn't exist in App.tsx routes */}
               <li>
                 <Link to="/profile" className="text-gray-300 hover:text-white transition-colors">
                   Mon Profil
