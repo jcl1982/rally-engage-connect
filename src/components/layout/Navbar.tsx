@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Trophy, Car, User, Menu, LogOut, LayoutDashboard } from "lucide-react";
@@ -39,6 +39,14 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const { isOrganizer, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
+
+  // Ajouter des logs pour le débogage
+  useEffect(() => {
+    if (user && !roleLoading) {
+      console.log("Navbar - User:", user);
+      console.log("Navbar - isOrganizer:", isOrganizer());
+    }
+  }, [user, roleLoading, isOrganizer]);
 
   const handleSignOut = async () => {
     await signOut();

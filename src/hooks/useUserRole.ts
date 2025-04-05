@@ -31,6 +31,9 @@ export const useUserRole = () => {
         
         // Transformer les données en tableau de rôles
         setRoles(data?.map((r) => r.role as UserRole) || []);
+        
+        // Logging des rôles pour le débogage
+        console.log("Rôles de l'utilisateur:", data?.map((r) => r.role) || []);
       } catch (err: any) {
         console.error("Erreur lors de la récupération des rôles:", err);
         setError(err.message || "Erreur lors du chargement des rôles");
@@ -43,18 +46,18 @@ export const useUserRole = () => {
   }, [user]);
 
   // Vérifier si l'utilisateur a un rôle spécifique
-  const hasRole = (role: UserRole): boolean => {
-    return roles.includes(role);
+  const hasRole = (role: UserRole | string): boolean => {
+    return roles.includes(role as UserRole);
   };
 
   // Vérifier si l'utilisateur est un organisateur ou un administrateur
   const isOrganizer = (): boolean => {
-    return hasRole('organizer' as UserRole) || hasRole('admin' as UserRole);
+    return hasRole('organizer') || hasRole('admin');
   };
 
   // Vérifier si l'utilisateur est un administrateur
   const isAdmin = (): boolean => {
-    return hasRole('admin' as UserRole);
+    return hasRole('admin');
   };
 
   return {

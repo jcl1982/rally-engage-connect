@@ -11,6 +11,10 @@ const OrganizerRoute = () => {
   
   const loading = authLoading || roleLoading;
 
+  // Ajouter des logs pour le débogage
+  console.log("OrganizerRoute - User:", user);
+  console.log("OrganizerRoute - isOrganizer:", isOrganizer());
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
