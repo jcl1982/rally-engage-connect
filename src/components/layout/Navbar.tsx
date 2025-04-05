@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Trophy, Car, User, Menu, LogOut, Calendar } from "lucide-react";
@@ -37,10 +37,21 @@ const NavItem = ({ to, icon, label, isMobile = false }: NavItemProps) => {
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
-  const { hasRole, loading: roleLoading } = useUserRole();
+  const { roles, hasRole, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
-  const isOrganizer = user && !roleLoading && (hasRole('organizer') || hasRole('admin'));
+  // Déterminer si l'utilisateur est un organisateur
+  const isOrganizer = user && !roleLoading && 
+    (hasRole('organizer') || hasRole('admin'));
+  
+  // Log pour débogage
+  useEffect(() => {
+    if (user) {
+      console.log("Navbar: Current user:", user.email);
+      console.log("Navbar: User roles:", roles);
+      console.log("Navbar: isOrganizer:", isOrganizer);
+    }
+  }, [user, roles, isOrganizer]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -73,14 +84,17 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-4">
           {user ? (
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-4 w-4" />
-              Déconnexion
-            </Button>
+            <>
+              <span className="text-sm mr-2">{user.email}</span>
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={handleSignOut}
+              >
+                <LogOut className="h-4 w-4" />
+                Déconnexion
+              </Button>
+            </>
           ) : (
             <>
               <Button variant="outline" asChild>
@@ -113,14 +127,17 @@ const Navbar = () => {
             </nav>
             <div className="flex flex-col gap-2 mt-8">
               {user ? (
-                <Button 
-                  variant="outline" 
-                  className="w-full flex items-center justify-center gap-2"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="h-4 w-4" />
-                  Déconnexion
-                </Button>
+                <>
+                  <div className="text-sm text-center mb-2">{user.email}</div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Déconnexion
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button variant="outline" asChild className="w-full">

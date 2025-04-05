@@ -23,34 +23,30 @@ export const useUserRole = () => {
 
       try {
         console.log("Fetching roles for user:", user.id);
-        console.log("User email:", user.email);
         
-        // Improved debugging for Supabase query
-        console.log("Executing query: SELECT role FROM user_roles WHERE user_id =", user.id);
-        
-        // Fix: Explicitly handle the types in the query
+        // Direct query to user_roles table for better debugging
         const { data, error: queryError } = await supabase
           .from('user_roles')
-          .select('role')
+          .select('*')
           .eq("user_id", user.id);
 
         if (queryError) {
-          console.error("Supabase query error:", queryError);
+          console.error("Error fetching user roles:", queryError);
           throw queryError;
         }
         
-        // Enhanced debugging for role data
-        console.log("Raw role data received:", data);
+        // Log the raw data for debugging
+        console.log("Raw user_roles data:", data);
         
-        // Transform data to array of roles - ensuring we safely access the role property
+        // Transform data to array of roles
         const userRoles = data && Array.isArray(data) 
           ? data.map((r) => r.role as UserRole)
           : [];
         
-        console.log("Fetched user roles:", userRoles);
+        console.log("Processed user roles:", userRoles);
         setRoles(userRoles);
       } catch (err: any) {
-        console.error("Error fetching roles:", err);
+        console.error("Error in useUserRole hook:", err);
         setError(err.message || "Error loading roles");
       } finally {
         setLoading(false);
@@ -62,8 +58,9 @@ export const useUserRole = () => {
 
   // Check if user has a specific role - memoized with useCallback
   const hasRole = useCallback((role: UserRole | string): boolean => {
-    console.log(`Checking if user has role '${role}'`, roles);
-    return roles.includes(role as UserRole);
+    const result = roles.includes(role as UserRole);
+    console.log(`Checking if user has role '${role}'`, roles, "Result:", result);
+    return result;
   }, [roles]);
 
   // Check if user is an organizer or admin - memoized with useCallback
