@@ -28,21 +28,25 @@ export const useUserRole = () => {
         // Improved debugging for Supabase query
         console.log("Executing query: SELECT role FROM user_roles WHERE user_id =", user.id);
         
-        const { data, error } = await supabase
+        // Fix: Explicitly handle the types in the query
+        const { data, error: queryError } = await supabase
           .from('user_roles')
           .select('role')
           .eq("user_id", user.id);
 
-        if (error) {
-          console.error("Supabase query error:", error);
-          throw error;
+        if (queryError) {
+          console.error("Supabase query error:", queryError);
+          throw queryError;
         }
         
         // Enhanced debugging for role data
         console.log("Raw role data received:", data);
         
-        // Transform data to array of roles
-        const userRoles = data?.map((r) => r.role as UserRole) || [];
+        // Transform data to array of roles - ensuring we safely access the role property
+        const userRoles = data && Array.isArray(data) 
+          ? data.map((r) => r.role as UserRole)
+          : [];
+        
         console.log("Fetched user roles:", userRoles);
         setRoles(userRoles);
       } catch (err: any) {
