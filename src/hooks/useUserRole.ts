@@ -23,10 +23,6 @@ export const useUserRole = () => {
 
       try {
         console.log("Fetching roles for user:", user.id);
-        console.log("User email:", user.email);
-        
-        // Improved debugging for Supabase query
-        console.log("Executing query: SELECT role_user FROM user_roles WHERE user_id =", user.id);
         
         const { data, error } = await supabase
           .from('user_roles')
@@ -37,9 +33,6 @@ export const useUserRole = () => {
           console.error("Supabase query error:", error);
           throw error;
         }
-        
-        // Enhanced debugging for role data
-        console.log("Raw role data received:", data);
         
         // Transform data to array of roles
         const userRoles = data?.map((r) => r.role_user as UserRole) || [];
@@ -56,20 +49,12 @@ export const useUserRole = () => {
     fetchUserRoles();
   }, [user]);
 
-  // Check if user has a specific role - memoized with useCallback
+  // Check if user has a specific role
   const hasRole = useCallback((role: UserRole | string): boolean => {
-    console.log(`Checking if user has role '${role}'`, roles);
     return roles.includes(role as UserRole);
   }, [roles]);
 
-  // Check if user is an organizer or admin - memoized with useCallback
-  const isOrganizer = useCallback((): boolean => {
-    const result = hasRole('organizer') || hasRole('admin');
-    console.log("isOrganizer check result:", result);
-    return result;
-  }, [hasRole]);
-
-  // Check if user is an admin - memoized with useCallback
+  // Check if user is an admin
   const isAdmin = useCallback((): boolean => {
     return hasRole('admin');
   }, [hasRole]);
@@ -79,7 +64,6 @@ export const useUserRole = () => {
     loading,
     error,
     hasRole,
-    isOrganizer,
     isAdmin
   };
 };
