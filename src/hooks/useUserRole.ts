@@ -25,16 +25,16 @@ export const useUserRole = () => {
         console.log("Fetching roles for user:", user.id);
         console.log("User email:", user.email);
         
-        // Modification de la requête pour récupérer le rôle correctement
+        // Correct column name from 'role' to 'role_user' based on database schema
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role')
+          .select('role_user')
           .eq("user_id", user.id);
 
         if (error) throw error;
         
         // Transform data to array of roles
-        const userRoles = data?.map((r) => r.role as UserRole) || [];
+        const userRoles = data?.map((r) => r.role_user as UserRole) || [];
         console.log("Fetched user roles:", userRoles);
         setRoles(userRoles);
       } catch (err: any) {
