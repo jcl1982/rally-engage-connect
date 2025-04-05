@@ -40,15 +40,17 @@ const Navbar = () => {
   const { roles, isOrganizer, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
-  // Ajouter des logs pour le débogage
+  // Amélioration des logs pour le débogage
   useEffect(() => {
     if (user) {
       console.log("Navbar - User:", user);
+      console.log("Navbar - User ID:", user.id);
+      console.log("Navbar - User Email:", user.email);
       console.log("Navbar - Roles:", roles);
       console.log("Navbar - isOrganizer:", isOrganizer());
-      console.log("Navbar - Loading:", roleLoading);
+      console.log("Navbar - Roles Loading:", roleLoading);
     }
-  }, [user, roleLoading, roles, isOrganizer]);
+  }, [user, roles, isOrganizer, roleLoading]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -58,7 +60,15 @@ const Navbar = () => {
     });
   };
 
+  // Détermination claire si l'utilisateur peut voir le lien organisateur
   const showOrganizerLink = user && isOrganizer();
+  
+  // Log pour débogage
+  useEffect(() => {
+    if (user) {
+      console.log("Should show organizer link:", showOrganizerLink);
+    }
+  }, [user, showOrganizerLink]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

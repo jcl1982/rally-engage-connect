@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/context/AuthContext";
@@ -22,6 +22,7 @@ export const useUserRole = () => {
       }
 
       try {
+        console.log("Fetching roles for user:", user.id);
         const { data, error } = await supabase
           .from('user_roles')
           .select('role_user')
@@ -31,10 +32,8 @@ export const useUserRole = () => {
         
         // Transform data to array of roles
         const userRoles = data?.map((r) => r.role_user as UserRole) || [];
+        console.log("Fetched user roles:", userRoles);
         setRoles(userRoles);
-        
-        // Log roles for debugging
-        console.log("User roles:", userRoles);
       } catch (err: any) {
         console.error("Error fetching roles:", err);
         setError(err.message || "Error loading roles");
@@ -46,20 +45,20 @@ export const useUserRole = () => {
     fetchUserRoles();
   }, [user]);
 
-  // Check if user has a specific role
-  const hasRole = (role: UserRole | string): boolean => {
+  // Check if user has a specific role - memoized with useCallback
+  const hasRole = useCallback((role: UserRole | string): boolean => {
     return roles.includes(role as UserRole);
-  };
+  }, [roles]);
 
-  // Check if user is an organizer or admin
-  const isOrganizer = (): boolean => {
+  // Check if user is an organizer or admin - memoized with useCallback
+  const isOrganizer = useCallback((): boolean => {
     return hasRole('organizer') || hasRole('admin');
-  };
+  }, [hasRole]);
 
-  // Check if user is an admin
-  const isAdmin = (): boolean => {
+  // Check if user is an admin - memoized with useCallback
+  const isAdmin = useCallback((): boolean => {
     return hasRole('admin');
-  };
+  }, [hasRole]);
 
   return {
     roles,
