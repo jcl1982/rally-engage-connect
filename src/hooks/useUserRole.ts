@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/context/AuthContext";
 
-// Définir le type pour les rôles d'utilisateur
+// Define the type for user roles
 type UserRole = Database["public"]["Enums"]["app_role"];
 
 export const useUserRole = () => {
@@ -24,19 +24,20 @@ export const useUserRole = () => {
       try {
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role_user') // Changed from 'role' to 'role_user' to match the database column
+          .select('role_user')
           .eq("user_id", user.id);
 
         if (error) throw error;
         
-        // Transformer les données en tableau de rôles
-        setRoles(data?.map((r) => r.role_user as UserRole) || []);
+        // Transform data to array of roles
+        const userRoles = data?.map((r) => r.role_user as UserRole) || [];
+        setRoles(userRoles);
         
-        // Logging des rôles pour le débogage
-        console.log("Rôles de l'utilisateur:", data?.map((r) => r.role_user) || []);
+        // Log roles for debugging
+        console.log("User roles:", userRoles);
       } catch (err: any) {
-        console.error("Erreur lors de la récupération des rôles:", err);
-        setError(err.message || "Erreur lors du chargement des rôles");
+        console.error("Error fetching roles:", err);
+        setError(err.message || "Error loading roles");
       } finally {
         setLoading(false);
       }
@@ -45,17 +46,17 @@ export const useUserRole = () => {
     fetchUserRoles();
   }, [user]);
 
-  // Vérifier si l'utilisateur a un rôle spécifique
+  // Check if user has a specific role
   const hasRole = (role: UserRole | string): boolean => {
     return roles.includes(role as UserRole);
   };
 
-  // Vérifier si l'utilisateur est un organisateur ou un administrateur
+  // Check if user is an organizer or admin
   const isOrganizer = (): boolean => {
     return hasRole('organizer') || hasRole('admin');
   };
 
-  // Vérifier si l'utilisateur est un administrateur
+  // Check if user is an admin
   const isAdmin = (): boolean => {
     return hasRole('admin');
   };

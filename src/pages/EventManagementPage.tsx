@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -49,19 +48,21 @@ const EventManagementPage = () => {
     
     setLoading(true);
     try {
+      // Only fetch events created by the current user
       const { data, error } = await supabase
         .from("events")
         .select("*")
+        .eq("organizer_id", user.id)
         .order("start_date", { ascending: true });
 
       if (error) throw error;
       setEvents(data as Event[]);
     } catch (error: any) {
-      console.error("Erreur lors de la récupération des événements:", error.message);
+      console.error("Error fetching events:", error.message);
       toast({
         variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de charger les événements."
+        title: "Error",
+        description: "Unable to load events."
       });
     } finally {
       setLoading(false);
@@ -87,8 +88,8 @@ const EventManagementPage = () => {
     setIsDeleteDialogOpen(false);
     fetchEvents();
     toast({
-      title: "Événement supprimé",
-      description: "L'événement a été supprimé avec succès."
+      title: "Event deleted",
+      description: "The event has been successfully deleted."
     });
   };
 
@@ -96,8 +97,8 @@ const EventManagementPage = () => {
     setIsEventFormOpen(false);
     fetchEvents();
     toast({
-      title: "Événement enregistré",
-      description: "L'événement a été enregistré avec succès."
+      title: "Event saved",
+      description: "The event has been successfully saved."
     });
   };
 

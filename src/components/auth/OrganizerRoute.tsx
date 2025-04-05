@@ -1,10 +1,9 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Loader } from "lucide-react";
-import AuthWrapper from "./AuthWrapper";
 
 const OrganizerRoute = () => {
   const { user, loading: authLoading } = useAuth();
@@ -12,7 +11,7 @@ const OrganizerRoute = () => {
   
   const loading = authLoading || roleLoading;
 
-  // Ajouter des logs pour le débogage
+  // Add logs for debugging
   console.log("OrganizerRoute - User:", user);
   console.log("OrganizerRoute - isOrganizer:", isOrganizer());
 
