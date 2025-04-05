@@ -37,16 +37,18 @@ const NavItem = ({ to, icon, label, isMobile = false }: NavItemProps) => {
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
-  const { isOrganizer, loading: roleLoading } = useUserRole();
+  const { roles, isOrganizer, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
   // Ajouter des logs pour le débogage
   useEffect(() => {
-    if (user && !roleLoading) {
+    if (user) {
       console.log("Navbar - User:", user);
+      console.log("Navbar - Roles:", roles);
       console.log("Navbar - isOrganizer:", isOrganizer());
+      console.log("Navbar - Loading:", roleLoading);
     }
-  }, [user, roleLoading, isOrganizer]);
+  }, [user, roleLoading, roles, isOrganizer]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -55,6 +57,8 @@ const Navbar = () => {
       description: "Vous avez été déconnecté avec succès.",
     });
   };
+
+  const showOrganizerLink = user && isOrganizer();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -73,7 +77,7 @@ const Navbar = () => {
           {user && (
             <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" />
           )}
-          {user && !roleLoading && isOrganizer() && (
+          {showOrganizerLink && (
             <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" />
           )}
         </nav>
@@ -116,7 +120,7 @@ const Navbar = () => {
               {user && (
                 <NavItem to="/profile" icon={<User className="w-5 h-5" />} label="Profil" isMobile />
               )}
-              {user && !roleLoading && isOrganizer() && (
+              {showOrganizerLink && (
                 <NavItem to="/organizer" icon={<LayoutDashboard className="w-5 h-5" />} label="Organisateur" isMobile />
               )}
             </nav>

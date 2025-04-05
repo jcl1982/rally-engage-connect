@@ -13,7 +13,8 @@ const OrganizerRoute = () => {
 
   // Add logs for debugging
   console.log("OrganizerRoute - User:", user);
-  console.log("OrganizerRoute - isOrganizer:", isOrganizer());
+  console.log("OrganizerRoute - Roles Loading:", roleLoading);
+  console.log("OrganizerRoute - Is Organizer:", isOrganizer());
 
   if (loading) {
     return (
