@@ -17,6 +17,9 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import AuthWrapper from "./components/auth/AuthWrapper";
+import OrganizerRoute from "./components/auth/OrganizerRoute";
+import EventManagementPage from "./pages/EventManagementPage";
+import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -65,6 +68,12 @@ const App = () => (
             {/* Routes protégées pour utilisateurs connectés */}
             <Route element={<PrivateRoute />}>
               <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+            
+            {/* Routes protégées pour organisateurs */}
+            <Route element={<OrganizerRoute />}>
+              <Route path="/organizer" element={<OrganizerDashboardPage />} />
+              <Route path="/organizer/events" element={<EventManagementPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
