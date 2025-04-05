@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Flag, Calendar, Users, Trophy } from "lucide-react";
+import { Clock, MapPin, Flag, Calendar, Users, Trophy, LayoutDashboard } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import EventCard from "@/components/events/EventCard";
 import { upcomingEvents } from "@/data/eventsData";
+import { useAuth } from "@/context/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const HeroSection = () => {
   return (
@@ -121,6 +123,52 @@ const FeaturesSection = () => {
   );
 };
 
+const OrganizerSection = () => {
+  return (
+    <section className="py-10 bg-rally-orange/10">
+      <div className="container">
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="md:max-w-2xl">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Espace Organisateur</h2>
+            <p className="text-muted-foreground mb-6">
+              En tant qu'organisateur, vous avez accès à un espace dédié pour gérer vos événements, 
+              suivre les inscriptions et configurer les détails de vos rallyes.
+            </p>
+            <div className="space-y-4 mb-6 md:mb-0">
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-rally-orange" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Gestion d'événements</h3>
+                  <p className="text-sm text-muted-foreground">Créez et gérez facilement vos rallyes</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-rally-orange" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Suivi des participants</h3>
+                  <p className="text-sm text-muted-foreground">Gérez les inscriptions et les participants</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 md:mt-0">
+            <Button asChild size="lg" className="bg-asag-red hover:bg-asag-red/90">
+              <Link to="/organizer">
+                <LayoutDashboard className="mr-2 h-5 w-5" />
+                Accéder à mon espace
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const UpcomingEventsSection = () => {
   return (
     <section className="py-20">
@@ -171,11 +219,24 @@ const CallToActionSection = () => {
 };
 
 const Index = () => {
+  const { user } = useAuth();
+  const { isOrganizer, loading: roleLoading } = useUserRole();
+  const [showOrganizerSection, setShowOrganizerSection] = useState(false);
+
+  useEffect(() => {
+    if (user && !roleLoading && isOrganizer()) {
+      setShowOrganizerSection(true);
+    } else {
+      setShowOrganizerSection(false);
+    }
+  }, [user, roleLoading, isOrganizer]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <HeroSection />
+        {showOrganizerSection && <OrganizerSection />}
         <FeaturesSection />
         <UpcomingEventsSection />
         <CallToActionSection />
