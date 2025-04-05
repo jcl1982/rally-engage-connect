@@ -60,7 +60,8 @@ const RegisterPage = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      terms: false,
+      terms: false as unknown as true, // This is a workaround for the type checking issue
+      // The actual validation happens in the Zod schema
     },
   });
   
