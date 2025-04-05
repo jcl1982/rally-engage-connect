@@ -13,7 +13,7 @@ const OrganizerRoute = () => {
   
   const loading = authLoading || roleLoading;
 
-  // Ajout d'un effet pour vérifier les rôles au chargement
+  // Enhanced effect for more detailed logging
   useEffect(() => {
     if (!loading && user) {
       console.log("OrganizerRoute - User ID:", user.id);
@@ -22,10 +22,12 @@ const OrganizerRoute = () => {
       console.log("OrganizerRoute - Is Organizer:", isOrganizer());
       
       if (!isOrganizer()) {
+        console.warn("Access denied: User does not have organizer permissions");
         toast({
           title: "Accès refusé",
-          description: "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
-          variant: "destructive"
+          description: "Vous n'avez pas les permissions nécessaires pour accéder à cette page. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur.",
+          variant: "destructive",
+          duration: 6000
         });
       }
     }
@@ -40,13 +42,16 @@ const OrganizerRoute = () => {
   }
 
   if (!user) {
+    console.log("OrganizerRoute: No user found, redirecting to login");
     return <Navigate to="/login" replace />;
   }
 
   if (!isOrganizer()) {
+    console.log("OrganizerRoute: User is not organizer, redirecting to profile");
     return <Navigate to="/profile" replace />;
   }
 
+  console.log("OrganizerRoute: Access granted to organizer area");
   return <Outlet />;
 };
 

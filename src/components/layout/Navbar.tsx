@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,15 +39,14 @@ const Navbar = () => {
   const { roles, isOrganizer, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
 
-  // Amélioration des logs pour le débogage
   useEffect(() => {
     if (user) {
       console.log("Navbar - User:", user);
       console.log("Navbar - User ID:", user.id);
       console.log("Navbar - User Email:", user.email);
-      console.log("Navbar - Roles:", roles);
-      console.log("Navbar - isOrganizer:", isOrganizer());
       console.log("Navbar - Roles Loading:", roleLoading);
+      console.log("Navbar - Roles:", roles);
+      console.log("Navbar - isOrganizer function result:", isOrganizer());
     }
   }, [user, roles, isOrganizer, roleLoading]);
 
@@ -60,15 +58,16 @@ const Navbar = () => {
     });
   };
 
-  // Détermination claire si l'utilisateur peut voir le lien organisateur
-  const showOrganizerLink = user && isOrganizer();
+  const showOrganizerLink = user && !roleLoading && isOrganizer();
   
-  // Log pour débogage
   useEffect(() => {
     if (user) {
-      console.log("Should show organizer link:", showOrganizerLink);
+      console.log("Should show organizer link:", showOrganizerLink, 
+        "User:", !!user, 
+        "Role loading:", roleLoading, 
+        "Is organizer:", isOrganizer());
     }
-  }, [user, showOrganizerLink]);
+  }, [user, showOrganizerLink, roleLoading, isOrganizer]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -80,7 +79,6 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <NavItem to="/" icon={<Trophy className="w-5 h-5" />} label="Accueil" />
           <NavItem to="/events" icon={<Car className="w-5 h-5" />} label="Événements" />
@@ -92,7 +90,6 @@ const Navbar = () => {
           )}
         </nav>
 
-        {/* Auth buttons */}
         <div className="hidden md:flex items-center gap-4">
           {user ? (
             <Button 
@@ -115,7 +112,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile menu */}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
