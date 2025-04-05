@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ const SuperUserPromotion: React.FC = () => {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<string>("admin");
   const [loading, setLoading] = useState(false);
+  const [autoPromoteStatus, setAutoPromoteStatus] = useState<Record<string, string>>({});
 
   const handlePromoteUser = async () => {
     if (!email || !email.includes('@')) {
@@ -21,26 +22,45 @@ const SuperUserPromotion: React.FC = () => {
 
     setLoading(true);
     try {
-      // Appel à la fonction edge pour promouvoir l'utilisateur
-      const { data, error } = await supabase.functions.invoke('promote-user-role', {
-        body: { email, role }
-      });
-
-      if (error) {
-        throw new Error(error.message || "Échec de la promotion de l'utilisateur");
+      const result = await promoteUser(email, role);
+      if (result.success) {
+        toast.success(result.message);
+        setEmail("");
+      } else {
+        throw new Error(result.error);
       }
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      toast.success(data.message || `L'utilisateur ${email} est maintenant un ${role}`);
-      setEmail("");
     } catch (error: any) {
       console.error("Erreur lors de la promotion de l'utilisateur:", error.message);
       toast.error(`Erreur: ${error.message || "Impossible de promouvoir cet utilisateur"}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to handle user promotion
+  const promoteUser = async (userEmail: string, userRole: string) => {
+    console.log(`Tentative de promotion de ${userEmail} comme ${userRole}`);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('promote-user-role', {
+        body: { email: userEmail, role: userRole }
+      });
+
+      if (error) {
+        console.error(`Erreur API lors de l'invocation de la fonction:`, error);
+        return { success: false, error: error.message };
+      }
+
+      if (data.error) {
+        console.error(`Erreur retournée par la fonction:`, data.error);
+        return { success: false, error: data.error };
+      }
+
+      console.log(`Promotion réussie pour ${userEmail}:`, data.message);
+      return { success: true, message: data.message || `L'utilisateur ${userEmail} est maintenant un ${userRole}` };
+    } catch (error: any) {
+      console.error(`Exception lors de la promotion de ${userEmail}:`, error.message);
+      return { success: false, error: error.message || "Erreur inconnue" };
     }
   };
 
@@ -50,33 +70,35 @@ const SuperUserPromotion: React.FC = () => {
   ];
 
   // Promotion automatique pour les utilisateurs spécifiques
-  React.useEffect(() => {
+  useEffect(() => {
     const promoteSpecificUsers = async () => {
       const specificUsers = [
         { email: "j.cleonis1982@gmail.com", role: "organizer" },
         { email: "tresorier@asaguadeloupe.fr", role: "organizer" }
       ];
 
+      setAutoPromoteStatus({});
+      
       for (const user of specificUsers) {
         try {
-          console.log(`Tentative de promotion de ${user.email} comme ${user.role}`);
-          const { data, error } = await supabase.functions.invoke('promote-user-role', {
-            body: { email: user.email, role: user.role }
-          });
-
-          if (error) {
-            console.error(`Erreur lors de la promotion automatique de ${user.email}:`, error.message);
-            continue;
-          }
-
-          if (data.error) {
-            console.error(`Erreur API lors de la promotion automatique de ${user.email}:`, data.error);
-            continue;
-          }
-
-          console.log(`Promotion réussie pour ${user.email}:`, data.message);
+          setAutoPromoteStatus(prev => ({
+            ...prev,
+            [user.email]: "en cours..."
+          }));
+          
+          const result = await promoteUser(user.email, user.role);
+          
+          setAutoPromoteStatus(prev => ({
+            ...prev,
+            [user.email]: result.success ? "succès" : `échec: ${result.error}`
+          }));
+          
         } catch (error: any) {
           console.error(`Exception lors de la promotion automatique de ${user.email}:`, error.message);
+          setAutoPromoteStatus(prev => ({
+            ...prev,
+            [user.email]: `erreur: ${error.message}`
+          }));
         }
       }
     };
@@ -127,6 +149,27 @@ const SuperUserPromotion: React.FC = () => {
               {loading ? "Attribution..." : "Attribuer droits"}
             </Button>
           </div>
+          
+          {/* Statut des promotions automatiques */}
+          {Object.keys(autoPromoteStatus).length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-medium mb-2">État des promotions automatiques:</h3>
+              <div className="text-sm space-y-1">
+                {Object.entries(autoPromoteStatus).map(([email, status]) => (
+                  <div key={email} className="flex items-center gap-2">
+                    <span>{email}:</span>
+                    <span className={
+                      status === "succès" ? "text-green-600" : 
+                      status === "en cours..." ? "text-amber-500" : 
+                      "text-red-600"
+                    }>
+                      {status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
       <CardFooter className="bg-muted/30 text-sm text-muted-foreground">

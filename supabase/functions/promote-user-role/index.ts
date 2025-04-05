@@ -49,16 +49,22 @@ serve(async (req) => {
       );
     }
 
-    // 1. Recherche de l'utilisateur par email
+    console.log(`Recherche de l'utilisateur par email: ${email}`);
+    // Recherche de l'utilisateur par email
     const { data: users, error: userError } = await supabaseAdmin.auth.admin.listUsers({
       filter: {
         email: email,
       },
     });
 
-    if (userError || !users || users.users.length === 0) {
+    if (userError) {
+      console.error("Erreur lors de la recherche de l'utilisateur:", userError);
+      throw userError;
+    }
+
+    if (!users || users.users.length === 0) {
       return new Response(
-        JSON.stringify({ error: "Utilisateur non trouvé" }),
+        JSON.stringify({ error: `Utilisateur non trouvé avec l'email: ${email}` }),
         { 
           status: 404, 
           headers: { ...corsHeaders, "Content-Type": "application/json" } 
@@ -68,15 +74,22 @@ serve(async (req) => {
 
     const user = users.users[0];
     const userId = user.id;
+    console.log(`Utilisateur trouvé avec l'ID: ${userId}`);
 
-    // 2. Vérification si l'utilisateur a déjà le rôle spécifié
+    // Vérification si l'utilisateur a déjà le rôle spécifié
     const { data: existingRole, error: roleError } = await supabaseAdmin
       .from("user_roles")
       .select("*")
       .eq("user_id", userId)
       .eq("role", role);
 
+    if (roleError) {
+      console.error("Erreur lors de la vérification du rôle existant:", roleError);
+      throw roleError;
+    }
+
     if (existingRole && existingRole.length > 0) {
+      console.log(`L'utilisateur a déjà le rôle ${role}`);
       return new Response(
         JSON.stringify({ message: `L'utilisateur est déjà un ${role}` }),
         { 
@@ -86,7 +99,8 @@ serve(async (req) => {
       );
     }
 
-    // 3. Attribution du rôle spécifié
+    // Attribution du rôle spécifié
+    console.log(`Attribution du rôle ${role} à l'utilisateur ${userId}`);
     const { error: insertError } = await supabaseAdmin
       .from("user_roles")
       .insert([
@@ -94,9 +108,11 @@ serve(async (req) => {
       ]);
 
     if (insertError) {
+      console.error("Erreur lors de l'insertion du rôle:", insertError);
       throw insertError;
     }
 
+    console.log(`Rôle ${role} attribué avec succès à ${email}`);
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -110,7 +126,7 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur:", error.message);
     
     return new Response(
