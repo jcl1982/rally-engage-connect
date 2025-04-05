@@ -53,7 +53,7 @@ export function useAdminUsers() {
       // Then, fetch roles for each profile in a separate query
       const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
-        .select('user_id, role');
+        .select('user_id, role_user');
       
       if (rolesError) {
         throw rolesError;
@@ -65,7 +65,7 @@ export function useAdminUsers() {
         if (!rolesByUser[role.user_id]) {
           rolesByUser[role.user_id] = [];
         }
-        rolesByUser[role.user_id].push(role.role);
+        rolesByUser[role.user_id].push(role.role_user);
       });
       
       // Map profiles to UserWithRoles objects

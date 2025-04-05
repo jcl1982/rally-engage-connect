@@ -1,16 +1,15 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { UserWithRoles } from "@/types/admin";
-import { Database } from "@/integrations/supabase/types";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useAdminUsers } from "@/hooks/useAdminUsers";
 import UserTable from "@/components/admin/UserTable";
 import UserRoleDialog from "@/components/admin/UserRoleDialog";
 import UserSearch from "@/components/admin/UserSearch";
-import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { RoleManager } from "@/components/admin/RoleManager";
+import { Database } from "@/integrations/supabase/types";
 
 // Define the type for user roles
 type UserRole = Database["public"]["Enums"]["app_role"];
@@ -19,7 +18,6 @@ type UserRole = Database["public"]["Enums"]["app_role"];
 const USERS_PER_PAGE = 10;
 
 export const UsersManagement: React.FC = () => {
-  const { toast } = useToast();
   const {
     filteredUsers,
     loading,
@@ -33,104 +31,16 @@ export const UsersManagement: React.FC = () => {
   } = useAdminUsers();
 
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
+  const { assignRole, removeRole } = RoleManager({ fetchUsers });
 
   // Calculate pagination values
   const totalUsers = filteredUsers.length;
   const totalPages = Math.max(1, Math.ceil(totalUsers / USERS_PER_PAGE));
   
-  // Ensure current page is valid
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(Math.max(1, totalPages));
-    }
-  }, [totalPages, currentPage, setCurrentPage]);
-
   // Get current users for the page
   const getCurrentPageUsers = () => {
     const startIndex = (currentPage - 1) * USERS_PER_PAGE;
     return filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
-  };
-
-  // Function to assign a role to a user
-  const assignRole = async (userId: string, role: UserRole) => {
-    try {
-      // Check if the user already has this role
-      const user = filteredUsers.find(u => u.id === userId);
-      if (user && user.roles.includes(role)) {
-        toast({
-          title: "Information",
-          description: `L'utilisateur possède déjà le rôle ${role}.`,
-        });
-        return;
-      }
-
-      // Add the role
-      const { error } = await supabase
-        .from('user_roles')
-        .insert([
-          { user_id: userId, role }
-        ]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Succès",
-        description: `Rôle ${role} attribué avec succès.`,
-      });
-
-      // Refresh the list of users
-      fetchUsers();
-    } catch (error) {
-      console.error('Erreur lors de l\'attribution du rôle:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible d'attribuer le rôle.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Function to remove a role from a user
-  const removeRole = async (userId: string, role: string) => {
-    try {
-      // Check if this is the user's only 'user' role
-      const user = filteredUsers.find(u => u.id === userId);
-      if (role === 'user' && user?.roles.length === 1) {
-        toast({
-          title: "Information",
-          description: "Impossible de retirer le rôle 'user' de base.",
-        });
-        return;
-      }
-
-      // Type guard to ensure role is a valid UserRole
-      if (role !== 'user' && role !== 'organizer' && role !== 'admin') {
-        throw new Error(`Invalid role: ${role}`);
-      }
-
-      const { error } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId)
-        .eq('role', role as UserRole);
-
-      if (error) throw error;
-
-      toast({
-        title: "Succès",
-        description: `Rôle ${role} retiré avec succès.`,
-      });
-
-      // Refresh the list of users
-      fetchUsers();
-    } catch (error) {
-      console.error('Erreur lors de la suppression du rôle:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de retirer le rôle.",
-        variant: "destructive",
-      });
-    }
   };
 
   return (
