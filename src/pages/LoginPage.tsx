@@ -1,5 +1,4 @@
-
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthService, AuthFormData } from "@/services/AuthService";
 
 // Define validation schema
 const loginSchema = z.object({
@@ -37,38 +36,15 @@ const LoginPage = () => {
     },
   });
   
-  // Check if user is already logged in
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/');
-      }
-    };
-    
-    checkSession();
-  }, [navigate]);
-  
   const handleLogin = async (values: LoginFormValues) => {
     try {
-      const { email, password } = values;
-      
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { error } = await AuthService.login(values as AuthFormData);
       
       if (error) {
         throw error;
       }
       
-      toast({
-        title: "Connexion réussie",
-        description: "Vous êtes maintenant connecté à votre compte ASA Guadeloupe.",
-      });
-      
-      // Navigate to the home page after successful login
-      navigate("/");
+      // Navigation is handled by auth state change in AuthContext
     } catch (error: any) {
       console.error("Erreur lors de la connexion:", error);
       toast({
@@ -122,6 +98,8 @@ const LoginPage = () => {
       });
     }
   };
+
+  const { supabase } = await import("@/integrations/supabase/client");
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-accent/50 py-12 px-4">

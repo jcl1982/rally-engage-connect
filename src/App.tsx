@@ -11,12 +11,15 @@ import RegistrationPage from "./pages/RegistrationPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import NewPasswordPage from "./pages/NewPasswordPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import OrganizerRoute from "./components/auth/OrganizerRoute";
 import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 import EventManagementPage from "./pages/EventManagementPage";
+import AuthWrapper from "./components/auth/AuthWrapper";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -29,10 +32,38 @@ const App = () => (
           <Toaster />
           <Sonner />
           <Routes>
+            {/* Routes publiques */}
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:id" element={<EventDetailsPage />} />
             <Route path="/events/:id/register" element={<RegistrationPage />} />
+            
+            {/* Routes d'authentification */}
+            <Route 
+              path="/login" 
+              element={
+                <AuthWrapper requireAuth={false} redirectTo="/">
+                  <LoginPage />
+                </AuthWrapper>
+              }
+            />
+            <Route 
+              path="/register" 
+              element={
+                <AuthWrapper requireAuth={false} redirectTo="/">
+                  <RegisterPage />
+                </AuthWrapper>
+              }
+            />
+            <Route 
+              path="/forgot-password" 
+              element={
+                <AuthWrapper requireAuth={false} redirectTo="/">
+                  <ForgotPasswordPage />
+                </AuthWrapper>
+              }
+            />
+            <Route path="/auth/new-password" element={<NewPasswordPage />} />
             
             {/* Routes protégées pour utilisateurs connectés */}
             <Route element={<PrivateRoute />}>
@@ -45,8 +76,6 @@ const App = () => (
               <Route path="/organizer/events" element={<EventManagementPage />} />
             </Route>
             
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

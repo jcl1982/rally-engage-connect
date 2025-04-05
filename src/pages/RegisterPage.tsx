@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthService, RegisterFormData } from "@/services/AuthService";
 
 // Define validation schema with password matching
 const registerSchema = z.object({
@@ -52,19 +51,7 @@ const RegisterPage = () => {
   
   const handleRegister = async (values: RegisterFormValues) => {
     try {
-      const { firstname, lastname, email, password } = values;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstname,
-            last_name: lastname
-          },
-          emailRedirectTo: `${window.location.origin}/login`
-        }
-      });
+      const { error } = await AuthService.register(values as RegisterFormData);
       
       if (error) {
         throw error;
@@ -86,6 +73,9 @@ const RegisterPage = () => {
       });
     }
   };
+  
+  // Get supabase client for social login
+  const { supabase } = await import("@/integrations/supabase/client");
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-accent/50 py-12 px-4">

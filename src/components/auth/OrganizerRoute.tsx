@@ -1,9 +1,10 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Loader } from "lucide-react";
+import AuthWrapper from "./AuthWrapper";
 
 const OrganizerRoute = () => {
   const { user, loading: authLoading } = useAuth();
