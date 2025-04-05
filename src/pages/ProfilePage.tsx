@@ -115,15 +115,15 @@ const ProfilePage = () => {
           // Try to create a profile if it doesn't exist (this might happen if the profile wasn't created during signup)
           if (error.code === 'PGRST116') { // No rows returned by the query
             console.log("Profile not found, attempting to create one");
-            const { user: authUser } = await supabase.auth.getUser();
+            const { data: userData } = await supabase.auth.getUser();
             
-            if (authUser.user) {
+            if (userData && userData.user) {
               const { error: insertError } = await supabase
                 .from('profiles')
                 .insert([{ 
                   id: user.id,
-                  first_name: authUser.user.user_metadata?.first_name || '',
-                  last_name: authUser.user.user_metadata?.last_name || ''
+                  first_name: userData.user.user_metadata?.first_name || '',
+                  last_name: userData.user.user_metadata?.last_name || ''
                 }]);
                 
               if (insertError) {
